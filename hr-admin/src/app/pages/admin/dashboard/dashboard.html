@@ -1,0 +1,272 @@
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">HR</div>
+    <div>
+      <div class="logo-text">HRManage</div>
+      <div class="logo-sub">{{ isAdmin ? 'Admin Panel' : isManager ? 'Manager Panel' : 'My Profile' }}</div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <div class="nav-item active"><span class="icon">#</span> Dashboard</div>
+    <div class="nav-item" *ngIf="isAdmin || isManager"><span class="icon">%</span> Analytics</div>
+  </div>
+
+  <div class="nav-section" *ngIf="isAdmin || isManager">
+    <div class="nav-label">HR Management</div>
+    <div class="nav-item"><span class="icon">E</span> Employees <span class="nav-badge">{{ employees().length }}</span></div>
+    <div class="nav-item"><span class="icon">D</span> Departments</div>
+    <div class="nav-item"><span class="icon">C</span> Contracts</div>
+    <div class="nav-item"><span class="icon">L</span> Leave Requests <span class="nav-badge">{{ pendingLeaves().length }}</span></div>
+    <div class="nav-item" *ngIf="isAdmin"><span class="icon">$</span> Payroll</div>
+  </div>
+
+  <div class="nav-section" *ngIf="isAdmin">
+    <div class="nav-label">System</div>
+    <div class="nav-item"><span class="icon">*</span> Settings</div>
+    <div class="nav-item"><span class="icon">@</span> Roles & Access</div>
+    <div class="nav-item"><span class="icon">i</span> Audit Logs</div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="avatar">{{ currentUser?.fullName?.substring(0,2)?.toUpperCase() }}</div>
+      <div>
+        <div class="user-name">{{ currentUser?.fullName }}</div>
+        <div class="user-role">{{ currentUser?.role }}</div>
+      </div>
+    </div>
+    <button class="btn-logout" type="button" (click)="logout()">Déconnexion</button>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div>
+      <div class="page-title">{{ isAdmin || isManager ? 'Dashboard' : 'Mon Profil' }}</div>
+      <div class="page-sub">{{ today | date: 'fullDate' }}</div>
+    </div>
+    <div class="topbar-actions">
+      <label class="search-box" *ngIf="isAdmin || isManager">
+        <span>Search</span>
+        <input type="search" placeholder="employees..."
+          [value]="searchTerm()"
+          (input)="searchTerm.set($any($event.target).value)" />
+      </label>
+      <button class="icon-btn" type="button" (click)="loadDashboard()" title="Refresh">R</button>
+      <button class="btn btn-primary" type="button" *ngIf="isAdmin || isManager" (click)="startCreate()">+ Add Employee</button>
+    </div>
+  </header>
+
+  <section class="content">
+    <div class="alert" *ngIf="error()">{{ error() }}</div>
+
+    <!-- Stats — Admin/Manager only -->
+    <div class="stats-grid" *ngIf="isAdmin || isManager">
+      <div class="stat-card blue">
+        <div class="stat-icon">E</div>
+        <div class="stat-value">{{ employees().length }}</div>
+        <div class="stat-label">Total Employees</div>
+        <span class="stat-change up">{{ newEmployeesThisMonth() }} this month</span>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-icon">D</div>
+        <div class="stat-value">{{ departments().length }}</div>
+        <div class="stat-label">Departments</div>
+        <span class="stat-change up">from database</span>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon">C</div>
+        <div class="stat-value">{{ activeContracts().length }}</div>
+        <div class="stat-label">Active Contracts</div>
+        <span class="stat-change up">linked records</span>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-icon">L</div>
+        <div class="stat-value">{{ pendingLeaves().length }}</div>
+        <div class="stat-label">Pending Leaves</div>
+        <span class="stat-change down">needs review</span>
+      </div>
+    </div>
+
+    <div class="workspace-grid">
+      <!-- Formulaire -->
+      <section #employeeFormPanel class="card form-card" [class.form-card-active]="formFlash()">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              {{ !isAdmin && !isManager ? 'Mon Profil' : editingEmployee() ? 'Edit Employee' : 'Add Employee' }}
+            </div>
+            <div class="card-sub" *ngIf="!isAdmin && !isManager">Vous pouvez modifier votre email et téléphone</div>
+            <div class="card-sub" *ngIf="isAdmin || isManager">Saved directly to the Employees table</div>
+          </div>
+        </div>
+
+        <form class="employee-form" [formGroup]="employeeForm" (ngSubmit)="saveEmployee()">
+          <label>
+            First name
+            <input #firstNameInput type="text" formControlName="firstName" />
+          </label>
+          <label>
+            Last name
+            <input type="text" formControlName="lastName" />
+          </label>
+          <label class="wide">
+            Email
+            <input type="email" formControlName="email" />
+          </label>
+          <label>
+            Phone
+            <input type="tel" formControlName="phone" />
+          </label>
+          <label>
+            Hire date
+            <input type="date" formControlName="hireDate" />
+          </label>
+          <label *ngIf="isAdmin || isManager">
+            Salary
+            <input type="number" min="0" step="100" formControlName="salary" />
+          </label>
+          <label *ngIf="isAdmin || isManager">
+            Department
+            <select formControlName="departmentId">
+              <option [ngValue]="null">No department</option>
+              <option *ngFor="let d of departments()" [ngValue]="d.id">{{ d.name }}</option>
+            </select>
+          </label>
+          <label *ngIf="isAdmin || isManager">
+            Job Title
+            <input type="text" formControlName="jobTitle" placeholder="ex: Développeur Senior" />
+          </label>
+          <label *ngIf="isAdmin || isManager">
+            Job Level
+            <select formControlName="jobLevel">
+              <option value="">-- Sélectionner --</option>
+              <option value="Junior">Junior</option>
+              <option value="Mid">Mid</option>
+              <option value="Senior">Senior</option>
+              <option value="Lead">Lead</option>
+              <option value="Director">Director</option>
+            </select>
+          </label>
+          <label *ngIf="isAdmin || isManager">
+            Manager
+            <select formControlName="managerId">
+              <option [ngValue]="null">No manager</option>
+              <option *ngFor="let e of employees()" [ngValue]="e.id">
+                {{ e.firstName }} {{ e.lastName }}
+              </option>
+            </select>
+          </label>
+          <label class="toggle" *ngIf="isAdmin">
+            <input type="checkbox" formControlName="isActive" />
+            Active employee
+          </label>
+
+          <div class="form-actions wide">
+            <button class="btn btn-primary" type="submit" [disabled]="isSaving()">
+              {{ isSaving() ? 'Saving...' : (!isAdmin && !isManager) ? 'Mettre à jour mon profil' : editingEmployee() ? 'Update Employee' : 'Create Employee' }}
+            </button>
+            <button class="btn btn-ghost" type="button" *ngIf="isAdmin || isManager" (click)="startCreate()">Clear</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Table — Admin/Manager only -->
+      <section class="card table-card" *ngIf="isAdmin || isManager">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Employees</div>
+            <div class="card-sub">{{ filteredEmployees().length }} shown from database</div>
+          </div>
+        </div>
+        <div class="loading" *ngIf="isLoading()">Loading database records...</div>
+        <table *ngIf="!isLoading()">
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Department</th>
+              <th>Job Title</th>
+              <th>Level</th>
+              <th>Contract</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let emp of filteredEmployees()">
+              <td>
+                <div class="emp-cell">
+                  <div class="emp-avatar">{{ initials(emp) }}</div>
+                  <div>
+                    <div class="emp-name">{{ emp.firstName }} {{ emp.lastName }}</div>
+                    <div class="emp-email">{{ emp.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-blue">{{ emp.departmentName || 'None' }}</span></td>
+              <td>{{ emp.jobTitle || '—' }}</td>
+              <td><span class="badge badge-purple" *ngIf="emp.jobLevel">{{ emp.jobLevel }}</span><span *ngIf="!emp.jobLevel">—</span></td>
+              <td>{{ contractType(emp.id) }}</td>
+              <td>
+                <span class="badge" [ngClass]="emp.isActive ? 'badge-green' : 'badge-red'">
+                  {{ emp.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <div class="row-actions">
+                  <button class="action-btn" type="button" (click)="startEdit(emp)">Edit</button>
+                  <button class="action-btn danger" type="button" *ngIf="isAdmin" (click)="deleteEmployee(emp)">Delete</button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredEmployees().length === 0">
+              <td colspan="7" class="empty">No employees found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- Bottom grid — Admin/Manager only -->
+    <div class="bottom-grid" *ngIf="isAdmin || isManager">
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Leave Requests</div>
+            <div class="card-sub">{{ pendingLeaves().length }} pending approval</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="leave-item" *ngFor="let leave of pendingLeaves().slice(0, 4)">
+            <div class="leave-avatar">{{ leave.employee ? initials(leave.employee) : 'NA' }}</div>
+            <div>
+              <div class="leave-name">{{ leave.employee?.firstName }} {{ leave.employee?.lastName }}</div>
+              <div class="leave-date">{{ leave.startDate | date: 'MMM d' }} – {{ leave.endDate | date: 'MMM d' }}</div>
+            </div>
+          </div>
+          <div class="empty compact" *ngIf="pendingLeaves().length === 0">No pending leave requests.</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><div class="card-title">Departments</div></div>
+        <div class="card-body">
+          <div class="dept-item" *ngFor="let d of departmentSummaries()">
+            <div class="dept-dot" [ngClass]="d.colorClass"></div>
+            <div class="dept-content">
+              <div class="dept-line">
+                <span class="dept-name">{{ d.name }}</span>
+                <span class="dept-count">{{ d.count }} emp</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" [ngClass]="d.colorClass" [style.width.%]="d.percent"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
