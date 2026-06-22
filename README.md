@@ -11,7 +11,7 @@ Full-stack HR management application built with ASP.NET Core, Entity Framework C
 - Manages employees from the admin dashboard.
 - Stores and reads data from SQL Server.
 - Exposes API endpoints for employees, departments, contracts, leaves, and auth.
-- Lets an employee edit their personal fields from the profile page.
+- Lets an employee edit only personal fields like email and phone.
 
 ## Current workflow
 
@@ -26,21 +26,20 @@ Full-stack HR management application built with ASP.NET Core, Entity Framework C
 ### Admin dashboard
 1. Dashboard loads employees, departments, contracts, and leaves from the API.
 2. The employee table shows active employees only.
-3. `Add Employee` opens a modal form.
+3. `Add Employee` opens the employee form.
 4. Saving a new employee creates:
    - a row in `Employees`
    - a linked row in `Users`
    - a generated username
-   - a password that can be suggested from the employee name and phone, or typed manually
-5. `Edit` opens the same modal and updates the employee record.
+   - a temporary password displayed once
+5. `Edit` updates the employee record.
 6. `Delete` removes the employee from the database, and the API blocks deleting a manager who still has active subordinates.
-7. `Reset password` accepts either a typed password or a generated one for the linked user account.
+7. `Reset password` generates a new temporary password for the linked user account.
 
 ### Employee profile
 1. The employee logs in.
 2. The profile page loads the employee by `employeeId` from the token.
-3. The employee can update first name, last name, email, and phone.
-4. The employee can also change their own password by confirming the current password first.
+3. The employee can update email and phone only.
 
 ## Backend structure
 
@@ -77,25 +76,12 @@ Main relationships:
 
 - The admin create flow is now the recommended path. It creates the employee and the user account together.
 - Manual account creation still exists in the dashboard detail panel as a fallback for older employees with no account.
-- The admin add and edit form now opens as a modal instead of living inline on the page.
 - The project currently uses local development URLs:
   - API: `http://localhost:5037`
   - Angular: `http://localhost:4200`
 - The Angular dashboard stylesheet is a little larger than the default budget because the page is doing a lot of work in one place.
 
-## Run locally
 
-### Backend
-```powershell
-cd C:\Users\MORTADHA2\HRManagement\HRManagement.API
-dotnet run
-```
-
-### Frontend
-```powershell
-cd C:\Users\MORTADHA2\HRManagement\HRManagement.API\hr-admin
-npm start
-```
 
 ## What is still worth improving
 
