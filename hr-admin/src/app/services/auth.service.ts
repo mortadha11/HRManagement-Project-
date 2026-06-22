@@ -36,6 +36,18 @@ export class AuthService {
       sessionStorage.removeItem(this.storageKey);
   }
 
+  clearSession(): void {
+    if (isPlatformBrowser(this.platformId))
+      sessionStorage.removeItem(this.storageKey);
+  }
+
+  updateSessionUser(patch: Partial<AuthUser>): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const current = this.currentUser;
+    if (!current) return;
+    sessionStorage.setItem(this.storageKey, JSON.stringify({ ...current, ...patch }));
+  }
+
   get currentUser(): AuthUser | null {
     if (!isPlatformBrowser(this.platformId)) return null;
     const raw = sessionStorage.getItem(this.storageKey);

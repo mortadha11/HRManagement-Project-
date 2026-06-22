@@ -3,17 +3,17 @@
     <div class="logo-icon">HR</div>
     <div>
       <div class="logo-text">HRManage</div>
-      <div class="logo-sub">{{ isAdmin ? 'Admin Panel' : isManager ? 'Manager Panel' : 'My Profile' }}</div>
+      <div class="logo-sub">{{ isAdmin ? 'Admin Panel' : 'Manager Panel' }}</div>
     </div>
   </div>
 
   <div class="nav-section">
     <div class="nav-label">Overview</div>
     <div class="nav-item active"><span class="icon">#</span> Dashboard</div>
-    <div class="nav-item" *ngIf="isAdmin || isManager"><span class="icon">%</span> Analytics</div>
+    <div class="nav-item"><span class="icon">%</span> Analytics</div>
   </div>
 
-  <div class="nav-section" *ngIf="isAdmin || isManager">
+  <div class="nav-section">
     <div class="nav-label">HR Management</div>
     <div class="nav-item"><span class="icon">E</span> Employees <span class="nav-badge">{{ employees().length }}</span></div>
     <div class="nav-item"><span class="icon">D</span> Departments</div>
@@ -37,165 +37,75 @@
         <div class="user-role">{{ currentUser?.role }}</div>
       </div>
     </div>
-    <button class="btn-logout" type="button" (click)="logout()">Déconnexion</button>
+    <button class="btn-logout" type="button" (click)="logout()">Logout</button>
   </div>
 </aside>
 
 <main class="main">
   <header class="topbar">
     <div>
-      <div class="page-title">{{ isAdmin || isManager ? 'Dashboard' : 'Mon Profil' }}</div>
+      <div class="page-title">Dashboard</div>
       <div class="page-sub">{{ today | date: 'fullDate' }}</div>
     </div>
     <div class="topbar-actions">
-      <label class="search-box" *ngIf="isAdmin || isManager">
-        <span>Search</span>
-        <input type="search" placeholder="employees..."
+      <label class="search-box">
+        <input
+          type="search"
+          placeholder="Search employees..."
           [value]="searchTerm()"
-          (input)="searchTerm.set($any($event.target).value)" />
+          (input)="searchTerm.set($any($event.target).value)"
+        />
       </label>
-      <button class="icon-btn" type="button" (click)="loadDashboard()" title="Refresh">R</button>
-      <button class="btn btn-primary" type="button" *ngIf="isAdmin || isManager" (click)="startCreate()">+ Add Employee</button>
+      <button class="btn btn-ghost" type="button" (click)="loadDashboard()">Refresh</button>
+      <button class="btn btn-primary" type="button" (click)="startCreate()">+ Add Employee</button>
     </div>
   </header>
 
   <section class="content">
     <div class="alert" *ngIf="error()">{{ error() }}</div>
 
-    <!-- Stats — Admin/Manager only -->
-    <div class="stats-grid" *ngIf="isAdmin || isManager">
+    <div class="stats-grid">
       <div class="stat-card blue">
-        <div class="stat-icon">E</div>
         <div class="stat-value">{{ employees().length }}</div>
         <div class="stat-label">Total Employees</div>
-        <span class="stat-change up">{{ newEmployeesThisMonth() }} this month</span>
+        <span class="stat-change">{{ newEmployeesThisMonth() }} this month</span>
       </div>
       <div class="stat-card purple">
-        <div class="stat-icon">D</div>
         <div class="stat-value">{{ departments().length }}</div>
         <div class="stat-label">Departments</div>
-        <span class="stat-change up">from database</span>
       </div>
       <div class="stat-card green">
-        <div class="stat-icon">C</div>
         <div class="stat-value">{{ activeContracts().length }}</div>
         <div class="stat-label">Active Contracts</div>
-        <span class="stat-change up">linked records</span>
       </div>
       <div class="stat-card orange">
-        <div class="stat-icon">L</div>
         <div class="stat-value">{{ pendingLeaves().length }}</div>
         <div class="stat-label">Pending Leaves</div>
-        <span class="stat-change down">needs review</span>
       </div>
     </div>
 
     <div class="workspace-grid">
-      <!-- Formulaire -->
-      <section #employeeFormPanel class="card form-card" [class.form-card-active]="formFlash()">
+      <section class="card table-card">
         <div class="card-header">
-          <div>
-            <div class="card-title">
-              {{ !isAdmin && !isManager ? 'Mon Profil' : editingEmployee() ? 'Edit Employee' : 'Add Employee' }}
-            </div>
-            <div class="card-sub" *ngIf="!isAdmin && !isManager">Vous pouvez modifier votre email et téléphone</div>
-            <div class="card-sub" *ngIf="isAdmin || isManager">Saved directly to the Employees table</div>
-          </div>
+          <div class="card-title">Employees</div>
+          <div class="card-sub">{{ filteredEmployees().length }} found</div>
         </div>
 
-        <form class="employee-form" [formGroup]="employeeForm" (ngSubmit)="saveEmployee()">
-          <label>
-            First name
-            <input #firstNameInput type="text" formControlName="firstName" />
-          </label>
-          <label>
-            Last name
-            <input type="text" formControlName="lastName" />
-          </label>
-          <label class="wide">
-            Email
-            <input type="email" formControlName="email" />
-          </label>
-          <label>
-            Phone
-            <input type="tel" formControlName="phone" />
-          </label>
-          <label>
-            Hire date
-            <input type="date" formControlName="hireDate" />
-          </label>
-          <label *ngIf="isAdmin || isManager">
-            Salary
-            <input type="number" min="0" step="100" formControlName="salary" />
-          </label>
-          <label *ngIf="isAdmin || isManager">
-            Department
-            <select formControlName="departmentId">
-              <option [ngValue]="null">No department</option>
-              <option *ngFor="let d of departments()" [ngValue]="d.id">{{ d.name }}</option>
-            </select>
-          </label>
-          <label *ngIf="isAdmin || isManager">
-            Job Title
-            <input type="text" formControlName="jobTitle" placeholder="ex: Développeur Senior" />
-          </label>
-          <label *ngIf="isAdmin || isManager">
-            Job Level
-            <select formControlName="jobLevel">
-              <option value="">-- Sélectionner --</option>
-              <option value="Junior">Junior</option>
-              <option value="Mid">Mid</option>
-              <option value="Senior">Senior</option>
-              <option value="Lead">Lead</option>
-              <option value="Director">Director</option>
-            </select>
-          </label>
-          <label *ngIf="isAdmin || isManager">
-            Manager
-            <select formControlName="managerId">
-              <option [ngValue]="null">No manager</option>
-              <option *ngFor="let e of employees()" [ngValue]="e.id">
-                {{ e.firstName }} {{ e.lastName }}
-              </option>
-            </select>
-          </label>
-          <label class="toggle" *ngIf="isAdmin">
-            <input type="checkbox" formControlName="isActive" />
-            Active employee
-          </label>
+        <div class="loading" *ngIf="isLoading()">Loading...</div>
 
-          <div class="form-actions wide">
-            <button class="btn btn-primary" type="submit" [disabled]="isSaving()">
-              {{ isSaving() ? 'Saving...' : (!isAdmin && !isManager) ? 'Mettre à jour mon profil' : editingEmployee() ? 'Update Employee' : 'Create Employee' }}
-            </button>
-            <button class="btn btn-ghost" type="button" *ngIf="isAdmin || isManager" (click)="startCreate()">Clear</button>
-          </div>
-        </form>
-      </section>
-
-      <!-- Table — Admin/Manager only -->
-      <section class="card table-card" *ngIf="isAdmin || isManager">
-        <div class="card-header">
-          <div>
-            <div class="card-title">Employees</div>
-            <div class="card-sub">{{ filteredEmployees().length }} shown from database</div>
-          </div>
-        </div>
-        <div class="loading" *ngIf="isLoading()">Loading database records...</div>
         <table *ngIf="!isLoading()">
           <thead>
             <tr>
               <th>Employee</th>
               <th>Department</th>
-              <th>Job Title</th>
+              <th>Job title</th>
               <th>Level</th>
-              <th>Contract</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let emp of filteredEmployees()">
+            <tr *ngFor="let emp of filteredEmployees()" class="clickable-row" (click)="openDetail(emp)">
               <td>
                 <div class="emp-cell">
                   <div class="emp-avatar">{{ initials(emp) }}</div>
@@ -206,47 +116,46 @@
                 </div>
               </td>
               <td><span class="badge badge-blue">{{ emp.departmentName || 'None' }}</span></td>
-              <td>{{ emp.jobTitle || '—' }}</td>
-              <td><span class="badge badge-purple" *ngIf="emp.jobLevel">{{ emp.jobLevel }}</span><span *ngIf="!emp.jobLevel">—</span></td>
-              <td>{{ contractType(emp.id) }}</td>
+              <td>{{ emp.jobTitle || '-' }}</td>
+              <td>
+                <span class="badge badge-purple" *ngIf="emp.jobLevel">{{ emp.jobLevel }}</span>
+                <span *ngIf="!emp.jobLevel">-</span>
+              </td>
               <td>
                 <span class="badge" [ngClass]="emp.isActive ? 'badge-green' : 'badge-red'">
                   {{ emp.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </td>
-              <td>
+              <td (click)="$event.stopPropagation()">
                 <div class="row-actions">
-                  <button class="action-btn" type="button" (click)="startEdit(emp)">Edit</button>
-                  <button class="action-btn danger" type="button" *ngIf="isAdmin" (click)="deleteEmployee(emp)">Delete</button>
+                  <button type="button" class="action-btn" (click)="startEdit(emp)">Edit</button>
+                  <button type="button" class="action-btn danger" *ngIf="isAdmin" (click)="deleteEmployee(emp)">Delete</button>
                 </div>
               </td>
             </tr>
             <tr *ngIf="filteredEmployees().length === 0">
-              <td colspan="7" class="empty">No employees found.</td>
+              <td colspan="6" class="empty">No employees found.</td>
             </tr>
           </tbody>
         </table>
       </section>
     </div>
 
-    <!-- Bottom grid — Admin/Manager only -->
-    <div class="bottom-grid" *ngIf="isAdmin || isManager">
+    <div class="bottom-grid">
       <section class="card">
         <div class="card-header">
-          <div>
-            <div class="card-title">Leave Requests</div>
-            <div class="card-sub">{{ pendingLeaves().length }} pending approval</div>
-          </div>
+          <div class="card-title">Leave Requests</div>
+          <div class="card-sub">{{ pendingLeaves().length }} pending</div>
         </div>
         <div class="card-body">
-          <div class="leave-item" *ngFor="let leave of pendingLeaves().slice(0, 4)">
+          <div class="leave-item" *ngFor="let leave of pendingLeaves().slice(0,4)">
             <div class="leave-avatar">{{ leave.employee ? initials(leave.employee) : 'NA' }}</div>
             <div>
               <div class="leave-name">{{ leave.employee?.firstName }} {{ leave.employee?.lastName }}</div>
-              <div class="leave-date">{{ leave.startDate | date: 'MMM d' }} – {{ leave.endDate | date: 'MMM d' }}</div>
+              <div class="leave-date">{{ leave.startDate | date:'MMM d' }} - {{ leave.endDate | date:'MMM d' }}</div>
             </div>
           </div>
-          <div class="empty compact" *ngIf="pendingLeaves().length === 0">No pending leave requests.</div>
+          <div class="empty compact" *ngIf="pendingLeaves().length === 0">No pending requests.</div>
         </div>
       </section>
 
@@ -270,3 +179,223 @@
     </div>
   </section>
 </main>
+
+<div class="modal-overlay" *ngIf="showEmployeeModal()" (click)="closeEmployeeModal()"></div>
+<aside class="modal-panel" *ngIf="showEmployeeModal()" (click)="$event.stopPropagation()">
+  <div class="modal-header">
+    <div>
+      <div class="modal-title">{{ editingEmployee() ? 'Edit Employee' : 'Add Employee' }}</div>
+      <div class="modal-sub">Saved directly to the Employees table</div>
+    </div>
+    <button class="close-btn" type="button" (click)="closeEmployeeModal()">X</button>
+  </div>
+
+  <form class="employee-form" [formGroup]="employeeForm" (ngSubmit)="saveEmployee()">
+    <label>First name<input #firstNameInput type="text" formControlName="firstName" (input)="passwordMode() === 'suggested' && refreshSuggestedPassword()" />
+      <span class="field-error" *ngIf="controlHasError('firstName', 'required')">First name is required.</span>
+      <span class="field-error" *ngIf="controlHasError('firstName', 'maxlength')">Max 80 characters.</span>
+      <span class="field-error" *ngIf="controlHasError('firstName', 'pattern')">Letters only, with spaces or apostrophes.</span>
+    </label>
+    <label>Last name<input type="text" formControlName="lastName" (input)="passwordMode() === 'suggested' && refreshSuggestedPassword()" />
+      <span class="field-error" *ngIf="controlHasError('lastName', 'required')">Last name is required.</span>
+      <span class="field-error" *ngIf="controlHasError('lastName', 'maxlength')">Max 80 characters.</span>
+      <span class="field-error" *ngIf="controlHasError('lastName', 'pattern')">Letters only, with spaces or apostrophes.</span>
+    </label>
+    <label class="wide">Email<input type="email" formControlName="email" />
+      <span class="field-error" *ngIf="controlHasError('email', 'required')">Email is required.</span>
+      <span class="field-error" *ngIf="controlHasError('email', 'email')">Enter a valid email.</span>
+    </label>
+    <label>Phone<input type="tel" formControlName="phone" (input)="passwordMode() === 'suggested' && refreshSuggestedPassword()" />
+      <span class="field-error" *ngIf="controlHasError('phone', 'pattern')">Use 6 to 20 digits, spaces, + or -.</span>
+    </label>
+    <label>Hire date<input type="date" formControlName="hireDate" />
+      <span class="field-error" *ngIf="controlHasError('hireDate', 'required')">Hire date is required.</span>
+    </label>
+    <label>Salary<input type="number" min="0" step="100" formControlName="salary" />
+      <span class="field-error" *ngIf="controlHasError('salary', 'min')">Salary cannot be negative.</span>
+      <span class="field-error" *ngIf="controlHasError('salary', 'max')">Salary is too high.</span>
+    </label>
+    <label>Department
+      <select formControlName="departmentId">
+        <option [ngValue]="null">No department</option>
+        <option *ngFor="let d of departments()" [ngValue]="d.id">{{ d.name }}</option>
+      </select>
+    </label>
+    <label>Job title<input type="text" formControlName="jobTitle" placeholder="ex: Developer" />
+      <span class="field-error" *ngIf="controlHasError('jobTitle', 'maxlength')">Max 80 characters.</span>
+    </label>
+    <label>Job level
+      <select formControlName="jobLevel">
+        <option value="">Select</option>
+        <option value="Junior">Junior</option>
+        <option value="Mid">Mid</option>
+        <option value="Senior">Senior</option>
+        <option value="Lead">Lead</option>
+        <option value="Director">Director</option>
+      </select>
+    </label>
+    <label>Manager
+      <select formControlName="managerId">
+        <option [ngValue]="null">No manager</option>
+        <option *ngFor="let e of employees()" [ngValue]="e.id">{{ e.firstName }} {{ e.lastName }}</option>
+      </select>
+    </label>
+    <label *ngIf="isAdmin">Role
+      <select formControlName="role">
+        <option value="Employee">Employee</option>
+        <option value="Manager">Manager</option>
+        <option value="Admin">Admin</option>
+      </select>
+      <span class="field-error" *ngIf="controlHasError('role', 'required')">Role is required.</span>
+    </label>
+    <div class="password-choice wide" *ngIf="!editingEmployee()">
+      <div class="choice-header">
+        <span>Password</span>
+        <div class="choice-actions">
+          <button type="button" class="btn btn-ghost" [class.active-choice]="passwordMode() === 'suggested'" (click)="useSuggestedPassword()">Suggested</button>
+          <button type="button" class="btn btn-ghost" [class.active-choice]="passwordMode() === 'manual'" (click)="useManualPassword()">Manual</button>
+        </div>
+      </div>
+
+      <div class="password-preview" *ngIf="passwordMode() === 'suggested'">
+        <div class="detail-note">Suggested: first 2 letters of first name + first 2 letters of last name + last 3 digits of phone.</div>
+        <input type="text" formControlName="password" readonly />
+        <button type="button" class="btn btn-ghost" (click)="refreshSuggestedPassword()">Refresh suggestion</button>
+      </div>
+
+      <div class="password-preview" *ngIf="passwordMode() === 'manual'">
+        <input type="password" formControlName="password" placeholder="Type a password" />
+        <span class="field-error" *ngIf="controlHasError('password', 'required')">Password is required.</span>
+      </div>
+      <span class="field-error" *ngIf="passwordMode() === 'suggested' && !suggestedPassword()">Enter first name, last name, and a phone with at least 3 digits to generate a suggestion.</span>
+    </div>
+    <label class="toggle" *ngIf="isAdmin">
+      <input type="checkbox" formControlName="isActive" /> Active employee
+    </label>
+
+    <div class="form-actions wide">
+      <button class="btn btn-primary" type="submit" [disabled]="isSaving()">
+        {{ isSaving() ? 'Saving...' : editingEmployee() ? 'Update Employee' : 'Create Employee' }}
+      </button>
+      <button class="btn btn-ghost" type="button" (click)="resetEmployeeForm()">Clear</button>
+    </div>
+  </form>
+
+  <div class="credentials-box" *ngIf="generatedCredentials() as creds">
+    <div class="credentials-title">Temporary credentials</div>
+    <div class="credentials-row"><span>Employee</span><strong>{{ creds.firstName }} {{ creds.lastName }}</strong></div>
+    <div class="credentials-row"><span>Username</span><strong>{{ creds.username }}</strong></div>
+    <div class="credentials-row"><span>Password</span><strong>{{ creds.temporaryPassword }}</strong></div>
+    <div class="credentials-row"><span>Role</span><strong>{{ creds.role }}</strong></div>
+  </div>
+</aside>
+
+<div class="detail-overlay" *ngIf="showDetailPanel()" (click)="closeDetail()"></div>
+
+<aside class="detail-panel" *ngIf="showDetailPanel()">
+  <div class="detail-header">
+    <div class="detail-title">Employee Profile</div>
+    <button class="close-btn" type="button" (click)="closeDetail()">X</button>
+  </div>
+
+  <ng-container *ngIf="selectedEmployee() as emp">
+    <div class="detail-identity">
+      <div class="detail-avatar">{{ initials(emp) }}</div>
+      <div>
+        <div class="detail-name">{{ emp.firstName }} {{ emp.lastName }}</div>
+        <div class="detail-job">{{ emp.jobTitle || 'Employee' }}</div>
+        <span class="badge badge-blue">{{ emp.jobLevel || '-' }}</span>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">HR Information</div>
+      <div class="detail-grid">
+        <div class="detail-item"><span class="detail-key">Email</span><span class="detail-val">{{ emp.email }}</span></div>
+        <div class="detail-item"><span class="detail-key">Phone</span><span class="detail-val">{{ emp.phone || '-' }}</span></div>
+        <div class="detail-item"><span class="detail-key">Department</span><span class="detail-val">{{ emp.departmentName || '-' }}</span></div>
+        <div class="detail-item"><span class="detail-key">Manager</span><span class="detail-val">{{ emp.managerName || '-' }}</span></div>
+        <div class="detail-item"><span class="detail-key">Hire date</span><span class="detail-val">{{ emp.hireDate | date:'dd/MM/yyyy' }}</span></div>
+        <div class="detail-item"><span class="detail-key">Salary</span><span class="detail-val">{{ (emp.salary | number:'1.0-0') || '-' }} TND</span></div>
+        <div class="detail-item">
+          <span class="detail-key">Status</span>
+          <span class="badge" [ngClass]="emp.isActive ? 'badge-green' : 'badge-red'">
+            {{ emp.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+        <div class="detail-item"><span class="detail-key">Role</span><span class="detail-val">{{ emp.role || '-' }}</span></div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title">User Account</div>
+      <div *ngIf="selectedUserAccount() as account">
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-key">Username</span><span class="detail-val">{{ account.username }}</span></div>
+          <div class="detail-item"><span class="detail-key">Role</span><span class="detail-val">{{ account.role }}</span></div>
+          <div class="detail-item"><span class="detail-key">Created</span><span class="detail-val">{{ account.createdAt | date:'dd/MM/yyyy' }}</span></div>
+          <div class="detail-item"><span class="detail-key">Last login</span><span class="detail-val">{{ (account.lastLoginAt | date:'dd/MM/yyyy HH:mm') || 'Never' }}</span></div>
+          <div class="detail-item">
+            <span class="detail-key">Active</span>
+            <span class="badge" [ngClass]="account.isActive ? 'badge-green' : 'badge-red'">
+              {{ account.isActive ? 'Yes' : 'No' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="password-section" *ngIf="isAdmin">
+          <div class="detail-section-title" style="margin-top:1rem">Reset password</div>
+          <div class="detail-note">Type a password yourself or generate a temporary one.</div>
+          <div class="password-row">
+            <input
+              type="text"
+              class="detail-input"
+              placeholder="New password"
+              [value]="newPassword()"
+              (input)="newPassword.set($any($event.target).value)"
+            />
+            <div class="password-actions">
+              <button type="button" class="btn btn-ghost" (click)="generatePasswordDraft()">Generate</button>
+              <button type="button" class="btn btn-warning" [disabled]="isResettingPassword()" (click)="resetPassword()">
+                {{ isResettingPassword() ? 'Saving...' : 'Update password' }}
+              </button>
+            </div>
+          </div>
+          <div class="msg-success" *ngIf="passwordMsg()">{{ passwordMsg() }}</div>
+          <div class="msg-error" *ngIf="passwordError()">{{ passwordError() }}</div>
+        </div>
+      </div>
+
+      <div *ngIf="!selectedUserAccount()">
+        <div class="detail-note">This employee does not have a login account yet.</div>
+        <button type="button" class="btn btn-primary" style="margin-top:.75rem" *ngIf="!showCreateAccount() && isAdmin"
+          (click)="showCreateAccount.set(true)">
+          + Create account
+        </button>
+
+        <div class="create-account-form" *ngIf="showCreateAccount()">
+          <input type="text" class="detail-input" placeholder="Username"
+            [value]="newAccountUsername()"
+            (input)="newAccountUsername.set($any($event.target).value)" />
+          <input type="password" class="detail-input" placeholder="Password (min 6 chars)"
+            [value]="newAccountPassword()"
+            (input)="newAccountPassword.set($any($event.target).value)" />
+          <select class="detail-input" [value]="newAccountRole()"
+            (change)="newAccountRole.set($any($event.target).value)">
+            <option value="Employee">Employee</option>
+            <option value="Manager">Manager</option>
+            <option value="Admin">Admin</option>
+          </select>
+          <button type="button" class="btn btn-primary" (click)="createAccount()">Create account</button>
+          <button type="button" class="btn btn-ghost" (click)="showCreateAccount.set(false)">Cancel</button>
+        </div>
+        <div class="msg-success" *ngIf="createAccountMsg()">{{ createAccountMsg() }}</div>
+      </div>
+    </div>
+
+    <div class="detail-actions" *ngIf="isAdmin">
+      <button type="button" class="btn btn-outline" (click)="startEdit(emp)">Edit</button>
+      <button type="button" class="btn btn-danger" (click)="deleteEmployee(emp)">Delete</button>
+    </div>
+  </ng-container>
+</aside>

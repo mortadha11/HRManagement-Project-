@@ -4,22 +4,128 @@
 
 > Building...
 √ Building...
-Browser bundles     
-Initial chunk files  | Names            |  Raw size
-main.js              | main             |  72.33 kB | 
-styles.css           | styles           |   8.79 kB | 
+Initial chunk files | Names         |  Raw size
+styles.css          | styles        |   8.79 kB | 
+main.js             | main          |   3.51 kB | 
+chunk-L6RYTTXC.js   | -             |   3.34 kB | 
 
-                     | Initial total    |  81.12 kB
+                    | Initial total |  15.64 kB
 
+Lazy chunk files    | Names         |  Raw size
+chunk-MAHU4T4G.js   | dashboard     | 112.75 kB | 
+chunk-74426IB5.js   | profile       |  38.92 kB | 
+chunk-33ZZHVBB.js   | login         |  24.47 kB | 
+chunk-NTRFQGET.js   | -             |   3.41 kB | 
 
-Server bundles      
-Initial chunk files  | Names            |  Raw size
-main.server.mjs      | main.server      |  73.60 kB | 
-server.mjs           | server           |   1.84 kB | 
-polyfills.server.mjs | polyfills.server | 268 bytes | 
-
-Application bundle generation complete. [2.957 seconds] - 2026-06-15T11:54:48.069Z
+Application bundle generation complete. [4.735 seconds] - 2026-06-22T19:59:39.366Z
 
 Watch mode enabled. Watching for file changes...
 NOTE: Raw file sizes do not reflect development server per-request transformations.
   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m4200[22m/[39m
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names     |  Raw size
+chunk-KRDR2ZU7.js   | -         |   3.62 kB | 
+main.js             | main      |   3.51 kB | 
+
+Lazy chunk files    | Names     |  Raw size
+chunk-GENTZ426.js   | dashboard | 112.75 kB | 
+chunk-AYRBQNX2.js   | profile   |  38.92 kB | 
+chunk-QOATPPOJ.js   | login     |  24.47 kB | 
+chunk-WG2XDKJ4.js   | -         |   3.41 kB | 
+
+Application bundle generation complete. [1.945 seconds] - 2026-06-22T20:09:43.333Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.566 seconds] - 2026-06-22T20:09:48.838Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.270 seconds] - 2026-06-22T20:10:02.483Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.007 seconds] - 2026-06-22T20:10:15.468Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.007 seconds] - 2026-06-22T20:10:21.650Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.002 seconds] - 2026-06-22T20:10:41.659Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names         |  Raw size
+styles.css          | styles        |   8.79 kB | 
+chunk-KRDR2ZU7.js   | -             |   3.62 kB | 
+main.js             | main          |   3.51 kB | 
+
+                    | Initial total |  15.91 kB
+
+Lazy chunk files    | Names         |  Raw size
+chunk-7Z4EFUL3.js   | dashboard     | 112.75 kB | 
+chunk-EWL6C7HC.js   | profile       |  40.75 kB | 
+chunk-QOATPPOJ.js   | login         |  24.47 kB | 
+chunk-Y7GMFQE7.js   | -             |   3.47 kB | 
+
+Application bundle generation complete. [0.840 seconds] - 2026-06-22T20:10:51.095Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.775 seconds] - 2026-06-22T20:11:12.475Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.001 seconds] - 2026-06-22T20:11:45.101Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.002 seconds] - 2026-06-22T20:11:51.366Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.002 seconds] - 2026-06-22T20:12:41.353Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [1.335 seconds] - 2026-06-22T20:12:55.736Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [2.081 seconds] - 2026-06-22T20:13:11.760Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [1.191 seconds] - 2026-06-22T20:13:18.256Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [1.253 seconds] - 2026-06-22T20:13:54.249Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [1.923 seconds] - 2026-06-22T20:14:01.771Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names         |  Raw size
+styles.css          | styles        |   8.79 kB | 
+chunk-KRDR2ZU7.js   | -             |   3.62 kB | 
+main.js             | main          |   3.51 kB | 
+
+                    | Initial total |  15.91 kB
+
+Lazy chunk files    | Names         |  Raw size
+chunk-CYFHCNRR.js   | dashboard     | 117.88 kB | 
+chunk-EWL6C7HC.js   | profile       |  40.75 kB | 
+chunk-QOATPPOJ.js   | login         |  24.47 kB | 
+chunk-Y7GMFQE7.js   | -             |   3.47 kB | 
+
+Application bundle generation complete. [1.998 seconds] - 2026-06-22T20:15:07.275Z
+
+Page reload sent to client(s).

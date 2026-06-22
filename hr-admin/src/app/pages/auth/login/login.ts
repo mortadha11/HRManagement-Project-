@@ -1,7 +1,7 @@
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -11,48 +11,56 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
-export class LoginComponent {
-  credentials  = { username: '', password: '' };
+export class LoginComponent implements OnInit {
+  credentials = { username: '', password: '' };
   showPassword = false;
-  isLoading    = false;
+  isLoading = false;
   errorMessage = '';
 
   constructor(
     private router: Router,
-    private auth:   AuthService,
-    @Inject(PLATFORM_ID) private platformId: object
+    private route: ActivatedRoute,
+    private auth: AuthService
   ) {}
 
-  onLogin() {
-    if (!isPlatformBrowser(this.platformId)) return;  // ← SSR fix
+  ngOnInit(): void {
+    if (this.auth.isLoggedIn) {
+      this.goToHome();
+      return;
+    }
 
+    const reason = this.route.snapshot.queryParamMap.get('reason');
+    if (reason === 'sign-in-again') {
+      this.errorMessage = 'Please sign in again.';
+    }
+  }
+
+  onLogin(): void {
     if (!this.credentials.username || !this.credentials.password) {
       this.errorMessage = 'Veuillez remplir tous les champs.';
       return;
     }
 
-    this.isLoading    = true;
+    this.isLoading = true;
     this.errorMessage = '';
 
     this.auth.login(this.credentials.username, this.credentials.password).subscribe({
       next: (user) => {
-        console.log('Login success:', user);
         this.isLoading = false;
-        if (user.role === 'Employee') {
-          this.router.navigate(['/employee/profile']);
-        } else {
-          this.router.navigate(['/admin/dashboard']);
-        }
+        this.goToHome(user.role);
       },
-      error: (err) => {
-        console.error('Login error:', err);
-        this.isLoading    = false;
+      error: () => {
+        this.isLoading = false;
         this.errorMessage = 'Identifiants incorrects.';
       }
     });
   }
 
-  togglePassword() {
-    this.showPassword = !this.showPassword;
+  private goToHome(role = this.auth.currentUser?.role): void {
+    if (role === 'Admin' || role === 'Manager') {
+      this.router.navigate(['/admin/dashboard'], { replaceUrl: true });
+    } else {
+      this.router.navigate(['/employee/profile'], { replaceUrl: true });
+    }
   }
 }

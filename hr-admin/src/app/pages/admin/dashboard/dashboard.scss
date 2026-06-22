@@ -380,7 +380,7 @@ select {
 
 .workspace-grid {
   display: grid;
-  grid-template-columns: 360px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   align-items: start;
   margin-bottom: 16px;
@@ -407,6 +407,13 @@ select {
   color: var(--text2);
   font-size: 12px;
   font-weight: 700;
+}
+
+.field-error {
+  color: #ff9f8f;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 .wide,
@@ -551,6 +558,235 @@ tbody td {
   height: 100%;
 }
 
+.form-card {
+  scroll-margin-top: 76px;
+}
+
+.form-card-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(46, 168, 255, .18);
+}
+
+.credentials-box {
+  margin: 0 20px 20px;
+  padding: 14px;
+  border: 1px solid rgba(46, 168, 255, .35);
+  border-radius: 8px;
+  background: rgba(46, 168, 255, .08);
+}
+
+.credentials-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.credentials-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  color: var(--text2);
+}
+
+.credentials-row strong {
+  color: var(--text);
+  text-align: right;
+}
+
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  z-index: 19;
+}
+
+.detail-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(460px, 100vw);
+  height: 100vh;
+  z-index: 20;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 18px;
+}
+
+.detail-header,
+.detail-identity,
+.detail-section-title,
+.detail-actions {
+  display: flex;
+}
+
+.detail-header,
+.detail-actions {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.close-btn,
+.btn-outline,
+.btn-warning {
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 8px 12px;
+}
+
+.btn-warning {
+  background: rgba(240, 136, 62, .15);
+  border-color: rgba(240, 136, 62, .35);
+  color: #ffd7b0;
+}
+
+.btn-outline:hover,
+.close-btn:hover,
+.btn-warning:hover {
+  filter: brightness(1.08);
+}
+
+.detail-identity {
+  gap: 12px;
+  align-items: center;
+  margin: 18px 0;
+}
+
+.detail-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+}
+
+.detail-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.detail-job,
+.detail-note,
+.detail-key {
+  color: var(--text2);
+}
+
+.detail-section {
+  margin-top: 18px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+  margin-top: 12px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-val {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.password-row,
+.create-account-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.detail-input {
+  width: 100%;
+}
+
+.detail-actions {
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+  z-index: 29;
+}
+
+.modal-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(980px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  z-index: 30;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.modal-sub {
+  color: var(--text2);
+  margin-top: 4px;
+}
+
+.password-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.modal-panel .employee-form {
+  margin-bottom: 16px;
+}
+
+.modal-panel .form-actions {
+  margin-top: 6px;
+}
+
+.msg-success,
+.msg-error {
+  margin-top: 10px;
+}
+
+.msg-success {
+  color: var(--green);
+}
+
+.msg-error {
+  color: var(--red);
+}
+
 .loading,
 .empty {
   color: var(--text2);
@@ -594,5 +830,13 @@ tbody td {
 
   .employee-form {
     grid-template-columns: 1fr;
+  }
+
+  .modal-panel {
+    width: calc(100vw - 16px);
+    top: 8px;
+    left: 8px;
+    transform: none;
+    max-height: calc(100vh - 16px);
   }
 }

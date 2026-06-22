@@ -163,10 +163,10 @@ C:\Users\MORTADHA2\HRManagement\HRManagement.API\bin\Debug\net10.0\Swashbuckle.A
 C:\Users\MORTADHA2\HRManagement\HRManagement.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Users\MORTADHA2\HRManagement\HRManagement.API\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Users\MORTADHA2\HRManagement\HRManagement.API\bin\Debug\net10.0\hr-admin\angular.json
-C:\Users\MORTADHA2\HRManagement\HRManagement.API\bin\Debug\net10.0\hr-admin\dist\hr-admin\prerendered-routes.json
 C:\Users\MORTADHA2\HRManagement\HRManagement.API\bin\Debug\net10.0\hr-admin\package-lock.json
 C:\Users\MORTADHA2\HRManagement\HRManagement.API\bin\Debug\net10.0\hr-admin\package.json
 C:\Users\MORTADHA2\HRManagement\HRManagement.API\bin\Debug\net10.0\hr-admin\tsconfig.app.json
 C:\Users\MORTADHA2\HRManagement\HRManagement.API\bin\Debug\net10.0\hr-admin\tsconfig.json
 C:\Users\MORTADHA2\HRManagement\HRManagement.API\bin\Debug\net10.0\hr-admin\tsconfig.spec.json
 C:\Users\MORTADHA2\HRManagement\HRManagement.API\bin\Debug\net10.0\BCrypt.Net-Next.dll
+C:\Users\MORTADHA2\HRManagement\HRManagement.API\bin\Debug\net10.0\hr-admin\dist\hr-admin\prerendered-routes.json
