@@ -1,0 +1,219 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="/startup2/css/bootstrap.min.css" rel="stylesheet">
+<link href="/startup2/css/style.css" rel="stylesheet">
+
+<div class="container-fluid bg-dark px-5 d-none d-lg-block">
+  <div class="row gx-0">
+    <div class="col-lg-8 text-center text-lg-start mb-2 mb-lg-0">
+      <div class="d-inline-flex align-items-center top-contact">
+        <small class="me-4 text-light">Email: contact&#64;hrmanage.tn</small>
+        <small class="me-4 text-light">Phone: +216 00 000 000</small>
+        <small class="text-light">Location: Tunis, Tunisia</small>
+      </div>
+    </div>
+    <div class="col-lg-4 text-center text-lg-end">
+      <div class="d-inline-flex align-items-center top-contact justify-content-end">
+        <small class="text-light">HR workspace for modern teams</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid position-relative p-0">
+  <nav class="navbar navbar-expand-lg navbar-dark px-5 py-3 py-lg-0">
+    <a routerLink="/" class="navbar-brand p-0">
+      <h1 class="m-0">HRManage</h1>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <div class="navbar-nav ms-auto py-0">
+        <a routerLink="/" class="nav-item nav-link active">Home</a>
+        <a class="nav-item nav-link" href="#missions">Missions</a>
+        <a class="nav-item nav-link" href="#about">About</a>
+        <a class="nav-item nav-link" href="#workflow">Workflow</a>
+        <a class="nav-item nav-link" href="#contact">Contact</a>
+      </div>
+      <a routerLink="/login" class="btn btn-primary py-2 px-4 ms-3">Login</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <img class="hero-image" src="/startup2/img/carousel-1.jpg" alt="HR team working together">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h5 class="text-white text-uppercase mb-3">Human resources, simplified</h5>
+      <h1 class="text-white mb-4">HRManage</h1>
+      <p class="text-white mb-5">A secure HR platform for managing employees, departments, contracts, leave requests, accounts, and employee self-service from one organized workspace.</p>
+      <a routerLink="/login" class="btn btn-primary py-md-3 px-md-5 me-3">Login</a>
+      <a href="#missions" class="btn btn-outline-light py-md-3 px-md-5">Explore</a>
+    </div>
+  </div>
+</div>
+
+<section class="container-fluid py-5 bg-light" id="missions">
+  <div class="container py-5">
+    <div class="section-title text-center position-relative pb-3 mb-5 mx-auto">
+      <h5 class="fw-bold text-primary text-uppercase">Our Missions</h5>
+      <h1 class="mb-0">What HRManage helps your team do</h1>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6">
+        <div class="mission-card h-100">
+          <div class="mission-number">01</div>
+          <h4>Centralize employee records</h4>
+          <p>Keep personal data, job details, department assignment, manager relation, and status clear for the HR team.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="mission-card h-100">
+          <div class="mission-number">02</div>
+          <h4>Secure access by role</h4>
+          <p>Admins and managers access the dashboard, while employees get a focused profile area for personal updates.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="mission-card h-100">
+          <div class="mission-number">03</div>
+          <h4>Simplify account management</h4>
+          <p>Create user accounts, suggest temporary passwords, reset credentials, and keep the login workflow connected to the database.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="mission-card h-100">
+          <div class="mission-number">04</div>
+          <h4>Follow contracts and departments</h4>
+          <p>Give HR a quick operational view of active contracts, departments, and employee distribution.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="mission-card h-100">
+          <div class="mission-number">05</div>
+          <h4>Prepare leave workflows</h4>
+          <p>Show pending leave requests and prepare the dashboard for approval and review operations.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="mission-card h-100">
+          <div class="mission-number">06</div>
+          <h4>Give employees self-service</h4>
+          <p>Employees can update their profile information and change their own password without depending on an admin.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container-fluid py-5" id="about">
+  <div class="container py-5">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <div class="section-title position-relative pb-3 mb-4">
+          <h5 class="fw-bold text-primary text-uppercase">About HRManage</h5>
+          <h1 class="mb-0">A practical HR application connected to a real backend</h1>
+        </div>
+        <p class="mb-4">HRManage is built to support the everyday work of an HR department. The application connects the Angular interface to a .NET API and SQL Server database so employees, accounts, departments, contracts, and leave data are stored and updated from the system instead of only changing on the screen.</p>
+        <p class="mb-4">The current version focuses on the core HR workflow: secure login, role-based navigation, employee CRUD, password management, dashboard summaries, and employee self-service.</p>
+        <a routerLink="/login" class="btn btn-primary py-3 px-5">Access workspace</a>
+      </div>
+      <div class="col-lg-6">
+        <img class="img-fluid rounded shadow" src="/startup2/img/about.jpg" alt="Human resources workspace">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container-fluid py-5 bg-light" id="workflow">
+  <div class="container py-5">
+    <div class="section-title text-center position-relative pb-3 mb-5 mx-auto">
+      <h5 class="fw-bold text-primary text-uppercase">Workflow</h5>
+      <h1 class="mb-0">How the platform works</h1>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="workflow-step h-100">
+          <span>1</span>
+          <h5>Sign in</h5>
+          <p>The backend validates the username and password and returns a JWT.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="workflow-step h-100">
+          <span>2</span>
+          <h5>Route by role</h5>
+          <p>Admins and managers go to the dashboard. Employees go to their profile.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="workflow-step h-100">
+          <span>3</span>
+          <h5>Manage data</h5>
+          <p>Dashboard actions call the API and update SQL Server records.</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="workflow-step h-100">
+          <span>4</span>
+          <h5>Stay secure</h5>
+          <p>Protected API calls use the bearer token stored in the browser session.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container-fluid py-5">
+  <div class="container py-5">
+    <div class="row g-4 text-center">
+      <div class="col-md-4">
+        <div class="highlight-box">
+          <h2>Role based</h2>
+          <p>Different spaces for admin, manager, and employee users.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="highlight-box">
+          <h2>Database driven</h2>
+          <p>Create, update, read, and delete operations are persisted through the API.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="highlight-box">
+          <h2>Self-service</h2>
+          <p>Employees can maintain their profile and update their password safely.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="container-fluid bg-dark text-light pt-5" id="contact">
+  <div class="container py-5">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <h3 class="text-white mb-3">HRManage</h3>
+        <p class="mb-0">A full-stack HR management workspace for employee records, accounts, departments, contracts, leave tracking, and profile self-service.</p>
+      </div>
+      <div class="col-lg-4">
+        <h5 class="text-white mb-3">Contact</h5>
+        <p class="mb-2">Email: contact&#64;hrmanage.tn</p>
+        <p class="mb-2">Phone: +216 00 000 000</p>
+        <p class="mb-0">Location: Tunis, Tunisia</p>
+      </div>
+      <div class="col-lg-4">
+        <h5 class="text-white mb-3">Workspace</h5>
+        <p class="mb-3">Open the secure area to manage HR operations according to your role.</p>
+        <a routerLink="/login" class="btn btn-primary py-2 px-4">Login</a>
+      </div>
+    </div>
+  </div>
+  <div class="container border-top border-secondary py-3">
+    <div class="row">
+      <div class="col-md-6 text-center text-md-start">2026 HRManage. All rights reserved.</div>
+      <div class="col-md-6 text-center text-md-end">Built for HR administration and employee self-service.</div>
+    </div>
+  </div>
+</footer>

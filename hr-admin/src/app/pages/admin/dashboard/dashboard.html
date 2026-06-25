@@ -1,231 +1,359 @@
-<aside class="sidebar">
-  <div class="logo">
-    <div class="logo-icon">HR</div>
-    <div>
-      <div class="logo-text">HRManage</div>
-      <div class="logo-sub">{{ isAdmin ? 'Admin Panel' : 'Manager Panel' }}</div>
-    </div>
-  </div>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/mazer/assets/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/mazer/assets/css/app.css">
 
-  <div class="nav-section">
-    <div class="nav-label">Overview</div>
-    <div class="nav-item active"><span class="icon">#</span> Dashboard</div>
-    <div class="nav-item"><span class="icon">%</span> Analytics</div>
-  </div>
-
-  <div class="nav-section">
-    <div class="nav-label">HR Management</div>
-    <div class="nav-item"><span class="icon">E</span> Employees <span class="nav-badge">{{ employees().length }}</span></div>
-    <div class="nav-item"><span class="icon">D</span> Departments</div>
-    <div class="nav-item"><span class="icon">C</span> Contracts</div>
-    <div class="nav-item"><span class="icon">L</span> Leave Requests <span class="nav-badge">{{ pendingLeaves().length }}</span></div>
-    <div class="nav-item" *ngIf="isAdmin"><span class="icon">$</span> Payroll</div>
-  </div>
-
-  <div class="nav-section" *ngIf="isAdmin">
-    <div class="nav-label">System</div>
-    <div class="nav-item"><span class="icon">*</span> Settings</div>
-    <div class="nav-item"><span class="icon">@</span> Roles & Access</div>
-    <div class="nav-item"><span class="icon">i</span> Audit Logs</div>
-  </div>
-
-  <div class="sidebar-footer">
-    <div class="user-card">
-      <div class="avatar">{{ currentUser?.fullName?.substring(0,2)?.toUpperCase() }}</div>
-      <div>
-        <div class="user-name">{{ currentUser?.fullName }}</div>
-        <div class="user-role">{{ currentUser?.role }}</div>
-      </div>
-    </div>
-    <button class="btn-logout" type="button" (click)="logout()">Logout</button>
-  </div>
-</aside>
-
-<main class="main">
-  <header class="topbar">
-    <div>
-      <div class="page-title">Dashboard</div>
-      <div class="page-sub">{{ today | date: 'fullDate' }}</div>
-    </div>
-    <div class="topbar-actions">
-      <label class="search-box">
-        <input
-          type="search"
-          placeholder="Search employees..."
-          [value]="searchTerm()"
-          (input)="searchTerm.set($any($event.target).value)"
-        />
-      </label>
-      <button class="btn btn-ghost" type="button" (click)="loadDashboard()">Refresh</button>
-      <button class="btn btn-primary" type="button" (click)="startCreate()">+ Add Employee</button>
-    </div>
-  </header>
-
-  <section class="content">
-    <div class="alert" *ngIf="error()">{{ error() }}</div>
-
-    <div class="stats-grid">
-      <div class="stat-card blue">
-        <div class="stat-value">{{ employees().length }}</div>
-        <div class="stat-label">Total Employees</div>
-        <span class="stat-change">{{ newEmployeesThisMonth() }} this month</span>
-      </div>
-      <div class="stat-card purple">
-        <div class="stat-value">{{ departments().length }}</div>
-        <div class="stat-label">Departments</div>
-      </div>
-      <div class="stat-card green">
-        <div class="stat-value">{{ activeContracts().length }}</div>
-        <div class="stat-label">Active Contracts</div>
-      </div>
-      <div class="stat-card orange">
-        <div class="stat-value">{{ pendingLeaves().length }}</div>
-        <div class="stat-label">Pending Leaves</div>
-      </div>
-    </div>
-
-    <div class="workspace-grid">
-      <section class="card table-card">
-        <div class="card-header">
-          <div class="card-title">Employees</div>
-          <div class="card-sub">{{ filteredEmployees().length }} found</div>
-        </div>
-
-        <div class="loading" *ngIf="isLoading()">Loading...</div>
-
-        <table *ngIf="!isLoading()">
-          <thead>
-            <tr>
-              <th>Employee</th>
-              <th>Department</th>
-              <th>Job title</th>
-              <th>Level</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let emp of filteredEmployees()" class="clickable-row" (click)="openDetail(emp)">
-              <td>
-                <div class="emp-cell">
-                  <div class="emp-avatar">{{ initials(emp) }}</div>
-                  <div>
-                    <div class="emp-name">{{ emp.firstName }} {{ emp.lastName }}</div>
-                    <div class="emp-email">{{ emp.email }}</div>
-                  </div>
-                </div>
-              </td>
-              <td><span class="badge badge-blue">{{ emp.departmentName || 'None' }}</span></td>
-              <td>{{ emp.jobTitle || '-' }}</td>
-              <td>
-                <span class="badge badge-purple" *ngIf="emp.jobLevel">{{ emp.jobLevel }}</span>
-                <span *ngIf="!emp.jobLevel">-</span>
-              </td>
-              <td>
-                <span class="badge" [ngClass]="emp.isActive ? 'badge-green' : 'badge-red'">
-                  {{ emp.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-              <td (click)="$event.stopPropagation()">
-                <div class="row-actions">
-                  <button type="button" class="action-btn" (click)="startEdit(emp)">Edit</button>
-                  <button type="button" class="action-btn danger" *ngIf="isAdmin" (click)="deleteEmployee(emp)">Delete</button>
-                </div>
-              </td>
-            </tr>
-            <tr *ngIf="filteredEmployees().length === 0">
-              <td colspan="6" class="empty">No employees found.</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-    </div>
-
-    <div class="bottom-grid">
-      <section class="card">
-        <div class="card-header">
-          <div class="card-title">Leave Requests</div>
-          <div class="card-sub">{{ pendingLeaves().length }} pending</div>
-        </div>
-        <div class="card-body">
-          <div class="leave-item" *ngFor="let leave of pendingLeaves().slice(0,4)">
-            <div class="leave-avatar">{{ leave.employee ? initials(leave.employee) : 'NA' }}</div>
-            <div>
-              <div class="leave-name">{{ leave.employee?.firstName }} {{ leave.employee?.lastName }}</div>
-              <div class="leave-date">{{ leave.startDate | date:'MMM d' }} - {{ leave.endDate | date:'MMM d' }}</div>
-            </div>
+<div id="app" class="mazer-page">
+  <div id="sidebar" class="active">
+    <div class="sidebar-wrapper active">
+      <div class="sidebar-header">
+        <div class="d-flex align-items-center gap-2">
+          <div class="brand-mark">HR</div>
+          <div>
+            <h5 class="mb-0">HRManage</h5>
+            <small class="text-muted">{{ isAdmin ? 'Admin Panel' : 'Manager Panel' }}</small>
           </div>
-          <div class="empty compact" *ngIf="pendingLeaves().length === 0">No pending requests.</div>
         </div>
-      </section>
+      </div>
 
-      <section class="card">
-        <div class="card-header"><div class="card-title">Departments</div></div>
-        <div class="card-body">
-          <div class="dept-item" *ngFor="let d of departmentSummaries()">
-            <div class="dept-dot" [ngClass]="d.colorClass"></div>
-            <div class="dept-content">
-              <div class="dept-line">
-                <span class="dept-name">{{ d.name }}</span>
-                <span class="dept-count">{{ d.count }} emp</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" [ngClass]="d.colorClass" [style.width.%]="d.percent"></div>
+      <div class="sidebar-menu">
+        <ul class="menu">
+          <li class="sidebar-title">Overview</li>
+          <li class="sidebar-item active">
+            <a class="sidebar-link">
+              <i class="bi bi-grid-fill"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a class="sidebar-link">
+              <i class="bi bi-bar-chart-fill"></i>
+              <span>Analytics</span>
+            </a>
+          </li>
+
+          <li class="sidebar-title">HR Management</li>
+          <li class="sidebar-item">
+            <a class="sidebar-link">
+              <i class="bi bi-people-fill"></i>
+              <span>Employees</span>
+              <span class="badge bg-primary ms-auto">{{ employees().length }}</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a class="sidebar-link">
+              <i class="bi bi-building"></i>
+              <span>Departments</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a class="sidebar-link">
+              <i class="bi bi-file-earmark-text-fill"></i>
+              <span>Contracts</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a class="sidebar-link">
+              <i class="bi bi-calendar2-check-fill"></i>
+              <span>Leave Requests</span>
+              <span class="badge bg-primary ms-auto">{{ pendingLeaves().length }}</span>
+            </a>
+          </li>
+
+          <ng-container *ngIf="isAdmin">
+            <li class="sidebar-title">System</li>
+            <li class="sidebar-item">
+              <a class="sidebar-link">
+                <i class="bi bi-shield-lock-fill"></i>
+                <span>Roles & Access</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link">
+                <i class="bi bi-journal-text"></i>
+                <span>Audit Logs</span>
+              </a>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="avatar avatar-lg">
+          <span class="avatar-content">{{ currentUser?.fullName?.substring(0,2)?.toUpperCase() }}</span>
+        </div>
+        <div class="min-w-0">
+          <h6 class="mb-0 text-truncate">{{ currentUser?.fullName }}</h6>
+          <small class="text-muted">{{ currentUser?.role }}</small>
+        </div>
+        <button class="btn icon btn-light-danger ms-auto" type="button" title="Logout" (click)="logout()">
+          <i class="bi bi-box-arrow-left"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="main" class="layout-navbar">
+    <header class="mb-3">
+      <nav class="navbar navbar-expand navbar-light">
+        <div class="container-fluid">
+          <div>
+            <h3 class="mb-0">Dashboard</h3>
+            <p class="text-muted mb-0">{{ today | date: 'fullDate' }}</p>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <div class="form-group position-relative has-icon-left mb-0 search-control">
+              <input type="search" class="form-control" placeholder="Search employees..." [value]="searchTerm()"
+                (input)="searchTerm.set($any($event.target).value)" />
+              <div class="form-control-icon"><i class="bi bi-search"></i></div>
+            </div>
+            <button class="btn icon btn-light-primary" type="button" title="Refresh" (click)="loadDashboard()">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+            <button class="btn btn-primary" type="button" (click)="startCreate()">
+              <i class="bi bi-plus-lg"></i>
+              Add Employee
+            </button>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div id="main-content">
+      <div class="alert alert-danger" *ngIf="error()">{{ error() }}</div>
+
+      <section class="row">
+        <div class="col-6 col-lg-3 col-md-6">
+          <div class="card">
+            <div class="card-body px-3 py-4-5">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="stats-icon blue"><i class="bi bi-people-fill"></i></div>
+                </div>
+                <div class="col-md-8">
+                  <h6 class="text-muted font-semibold">Employees</h6>
+                  <h6 class="font-extrabold mb-0">{{ employees().length }}</h6>
+                  <small class="text-muted">{{ newEmployeesThisMonth() }} this month</small>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <div class="col-6 col-lg-3 col-md-6">
+          <div class="card">
+            <div class="card-body px-3 py-4-5">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="stats-icon purple"><i class="bi bi-building"></i></div>
+                </div>
+                <div class="col-md-8">
+                  <h6 class="text-muted font-semibold">Departments</h6>
+                  <h6 class="font-extrabold mb-0">{{ departments().length }}</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3 col-md-6">
+          <div class="card">
+            <div class="card-body px-3 py-4-5">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="stats-icon green"><i class="bi bi-file-check-fill"></i></div>
+                </div>
+                <div class="col-md-8">
+                  <h6 class="text-muted font-semibold">Active Contracts</h6>
+                  <h6 class="font-extrabold mb-0">{{ activeContracts().length }}</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3 col-md-6">
+          <div class="card">
+            <div class="card-body px-3 py-4-5">
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="stats-icon red"><i class="bi bi-calendar2-week-fill"></i></div>
+                </div>
+                <div class="col-md-8">
+                  <h6 class="text-muted font-semibold">Pending Leaves</h6>
+                  <h6 class="font-extrabold mb-0">{{ pendingLeaves().length }}</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="row">
+        <div class="col-12 col-xl-8">
+          <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+              <div>
+                <h4 class="card-title mb-1">Employees</h4>
+                <p class="text-muted mb-0">{{ filteredEmployees().length }} found</p>
+              </div>
+              <button class="btn btn-light-primary" type="button" (click)="startCreate()">
+                <i class="bi bi-person-plus-fill"></i>
+                Add
+              </button>
+            </div>
+            <div class="card-body">
+              <div class="text-muted p-4" *ngIf="isLoading()">Loading employees...</div>
+              <div class="table-responsive" *ngIf="!isLoading()">
+                <table class="table table-hover table-lg">
+                  <thead>
+                    <tr>
+                      <th>Employee</th>
+                      <th>Department</th>
+                      <th>Contract</th>
+                      <th>Status</th>
+                      <th class="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let emp of filteredEmployees()" class="clickable-row" (click)="openDetail(emp)">
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <div class="avatar avatar-md me-3"><span class="avatar-content">{{ initials(emp) }}</span>
+                          </div>
+                          <div>
+                            <h6 class="mb-0">{{ emp.firstName }} {{ emp.lastName }}</h6>
+                            <small class="text-muted">{{ emp.email }}</small>
+                          </div>
+                        </div>
+                      </td>
+                      <td><span class="badge bg-light-primary">{{ emp.departmentName || 'None' }}</span></td>
+                      <td>{{ contractType(emp.id) }}</td>
+                      <td>
+                        <span class="badge" [ngClass]="emp.isActive ? 'bg-light-success' : 'bg-light-danger'">
+                          {{ emp.isActive ? 'Active' : 'Inactive' }}
+                        </span>
+                      </td>
+                      <td class="text-end" (click)="$event.stopPropagation()">
+                        <button type="button" class="btn icon btn-light-primary me-1" title="Edit"
+                          (click)="startEdit(emp)">
+                          <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button type="button" class="btn icon btn-light-danger" title="Delete" *ngIf="isAdmin"
+                          (click)="deleteEmployee(emp)">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <tr *ngIf="filteredEmployees().length === 0">
+                      <td colspan="5" class="text-center text-muted py-5">No employees found.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-xl-4">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">Leave Requests</h4>
+              <p class="text-muted mb-0">{{ pendingLeaves().length }} pending approval</p>
+            </div>
+            <div class="card-body">
+              <div class="recent-message d-flex px-0 py-3" *ngFor="let leave of pendingLeaves().slice(0,4)">
+                <div class="avatar avatar-lg me-3">
+                  <span class="avatar-content">{{ leave.employee ? initials(leave.employee) : 'NA' }}</span>
+                </div>
+                <div>
+                  <h6 class="mb-1">{{ leave.employee?.firstName }} {{ leave.employee?.lastName }}</h6>
+                  <p class="text-muted mb-0">{{ leave.startDate | date:'MMM d' }} - {{ leave.endDate | date:'MMM d' }}
+                  </p>
+                </div>
+              </div>
+              <div class="text-muted py-4" *ngIf="pendingLeaves().length === 0">No pending requests.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">Departments</h4>
+            </div>
+            <div class="card-body">
+              <div class="department-line" *ngFor="let d of departmentSummaries()">
+                <div class="d-flex justify-content-between">
+                  <span class="font-semibold">{{ d.name }}</span>
+                  <span class="text-muted">{{ d.count }} emp</span>
+                </div>
+                <div class="progress progress-primary mt-2">
+                  <div class="progress-bar" [style.width.%]="d.percent"></div>
+                </div>
+              </div>
+              <div class="text-muted py-4" *ngIf="departmentSummaries().length === 0">No departments yet.</div>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
-  </section>
-</main>
+  </div>
+</div>
 
-<div class="modal-overlay" *ngIf="showEmployeeModal()" (click)="closeEmployeeModal()"></div>
-<aside class="modal-panel" *ngIf="showEmployeeModal()" (click)="$event.stopPropagation()">
-  <div class="modal-header">
+<div class="modal-backdrop-soft" *ngIf="showEmployeeModal()" (click)="closeEmployeeModal()"></div>
+<aside class="crud-panel" *ngIf="showEmployeeModal()" (click)="$event.stopPropagation()">
+  <div class="panel-header">
     <div>
-      <div class="modal-title">{{ editingEmployee() ? 'Edit Employee' : 'Add Employee' }}</div>
-      <div class="modal-sub">Saved directly to the Employees table</div>
+      <h4 class="mb-1">{{ editingEmployee() ? 'Edit Employee' : 'Add Employee' }}</h4>
+      <p class="text-muted mb-0">Saved directly to the Employees table</p>
     </div>
-    <button class="close-btn" type="button" (click)="closeEmployeeModal()">X</button>
+    <button class="btn icon btn-light-secondary" type="button" title="Close" (click)="closeEmployeeModal()">
+      <i class="bi bi-x-lg"></i>
+    </button>
   </div>
 
-  <form class="employee-form" [formGroup]="employeeForm" (ngSubmit)="saveEmployee()">
-    <label>First name<input #firstNameInput type="text" formControlName="firstName" (input)="passwordMode() === 'suggested' && refreshSuggestedPassword()" />
-      <span class="field-error" *ngIf="controlHasError('firstName', 'required')">First name is required.</span>
-      <span class="field-error" *ngIf="controlHasError('firstName', 'maxlength')">Max 80 characters.</span>
-      <span class="field-error" *ngIf="controlHasError('firstName', 'pattern')">Letters only, with spaces or apostrophes.</span>
-    </label>
-    <label>Last name<input type="text" formControlName="lastName" (input)="passwordMode() === 'suggested' && refreshSuggestedPassword()" />
-      <span class="field-error" *ngIf="controlHasError('lastName', 'required')">Last name is required.</span>
-      <span class="field-error" *ngIf="controlHasError('lastName', 'maxlength')">Max 80 characters.</span>
-      <span class="field-error" *ngIf="controlHasError('lastName', 'pattern')">Letters only, with spaces or apostrophes.</span>
-    </label>
-    <label class="wide">Email<input type="email" formControlName="email" />
-      <span class="field-error" *ngIf="controlHasError('email', 'required')">Email is required.</span>
-      <span class="field-error" *ngIf="controlHasError('email', 'email')">Enter a valid email.</span>
-    </label>
-    <label>Phone<input type="tel" formControlName="phone" (input)="passwordMode() === 'suggested' && refreshSuggestedPassword()" />
-      <span class="field-error" *ngIf="controlHasError('phone', 'pattern')">Use 6 to 20 digits, spaces, + or -.</span>
-    </label>
-    <label>Hire date<input type="date" formControlName="hireDate" />
-      <span class="field-error" *ngIf="controlHasError('hireDate', 'required')">Hire date is required.</span>
-    </label>
-    <label>Salary<input type="number" min="0" step="100" formControlName="salary" />
-      <span class="field-error" *ngIf="controlHasError('salary', 'min')">Salary cannot be negative.</span>
-      <span class="field-error" *ngIf="controlHasError('salary', 'max')">Salary is too high.</span>
-    </label>
-    <label>Department
-      <select formControlName="departmentId">
+  <form class="row g-3" [formGroup]="employeeForm" (ngSubmit)="saveEmployee()">
+    <div class="col-md-6">
+      <label class="form-label">First name</label>
+      <input #firstNameInput type="text" class="form-control" formControlName="firstName"
+        (input)="passwordMode() === 'suggested' && refreshSuggestedPassword()" />
+      <small class="text-danger" *ngIf="controlHasError('firstName')">Valid first name is required.</small>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Last name</label>
+      <input type="text" class="form-control" formControlName="lastName"
+        (input)="passwordMode() === 'suggested' && refreshSuggestedPassword()" />
+      <small class="text-danger" *ngIf="controlHasError('lastName')">Valid last name is required.</small>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" formControlName="email" />
+      <small class="text-danger" *ngIf="controlHasError('email')">Enter a valid email.</small>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Phone</label>
+      <input type="tel" class="form-control" formControlName="phone"
+        (input)="passwordMode() === 'suggested' && refreshSuggestedPassword()" />
+      <small class="text-danger" *ngIf="controlHasError('phone')">Use 6 to 20 digits, spaces, + or -.</small>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Hire date</label>
+      <input type="date" class="form-control" formControlName="hireDate" />
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Salary</label>
+      <input type="number" min="0" step="100" class="form-control" formControlName="salary" />
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Department</label>
+      <select class="form-select" formControlName="departmentId">
         <option [ngValue]="null">No department</option>
         <option *ngFor="let d of departments()" [ngValue]="d.id">{{ d.name }}</option>
       </select>
-    </label>
-    <label>Job title<input type="text" formControlName="jobTitle" placeholder="ex: Developer" />
-      <span class="field-error" *ngIf="controlHasError('jobTitle', 'maxlength')">Max 80 characters.</span>
-    </label>
-    <label>Job level
-      <select formControlName="jobLevel">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Job title</label>
+      <input type="text" class="form-control" formControlName="jobTitle" placeholder="ex: Developer" />
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Job level</label>
+      <select class="form-select" formControlName="jobLevel">
         <option value="">Select</option>
         <option value="Junior">Junior</option>
         <option value="Mid">Mid</option>
@@ -233,169 +361,161 @@
         <option value="Lead">Lead</option>
         <option value="Director">Director</option>
       </select>
-    </label>
-    <label>Manager
-      <select formControlName="managerId">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Manager</label>
+      <select class="form-select" formControlName="managerId">
         <option [ngValue]="null">No manager</option>
         <option *ngFor="let e of employees()" [ngValue]="e.id">{{ e.firstName }} {{ e.lastName }}</option>
       </select>
-    </label>
-    <label *ngIf="isAdmin">Role
-      <select formControlName="role">
+    </div>
+    <div class="col-md-6" *ngIf="isAdmin">
+      <label class="form-label">Role</label>
+      <select class="form-select" formControlName="role">
         <option value="Employee">Employee</option>
         <option value="Manager">Manager</option>
         <option value="Admin">Admin</option>
       </select>
-      <span class="field-error" *ngIf="controlHasError('role', 'required')">Role is required.</span>
-    </label>
-    <div class="password-choice wide" *ngIf="!editingEmployee()">
-      <div class="choice-header">
-        <span>Password</span>
-        <div class="choice-actions">
-          <button type="button" class="btn btn-ghost" [class.active-choice]="passwordMode() === 'suggested'" (click)="useSuggestedPassword()">Suggested</button>
-          <button type="button" class="btn btn-ghost" [class.active-choice]="passwordMode() === 'manual'" (click)="useManualPassword()">Manual</button>
-        </div>
-      </div>
-
-      <div class="password-preview" *ngIf="passwordMode() === 'suggested'">
-        <div class="detail-note">Suggested: first 2 letters of first name + first 2 letters of last name + last 3 digits of phone.</div>
-        <input type="text" formControlName="password" readonly />
-        <button type="button" class="btn btn-ghost" (click)="refreshSuggestedPassword()">Refresh suggestion</button>
-      </div>
-
-      <div class="password-preview" *ngIf="passwordMode() === 'manual'">
-        <input type="password" formControlName="password" placeholder="Type a password" />
-        <span class="field-error" *ngIf="controlHasError('password', 'required')">Password is required.</span>
-      </div>
-      <span class="field-error" *ngIf="passwordMode() === 'suggested' && !suggestedPassword()">Enter first name, last name, and a phone with at least 3 digits to generate a suggestion.</span>
     </div>
-    <label class="toggle" *ngIf="isAdmin">
-      <input type="checkbox" formControlName="isActive" /> Active employee
-    </label>
 
-    <div class="form-actions wide">
+    <div class="col-12" *ngIf="!editingEmployee()">
+      <label class="form-label">Password</label>
+      <div class="btn-group mb-2">
+        <button type="button" class="btn btn-sm"
+          [ngClass]="passwordMode() === 'suggested' ? 'btn-primary' : 'btn-light-primary'"
+          (click)="useSuggestedPassword()">Suggested</button>
+        <button type="button" class="btn btn-sm"
+          [ngClass]="passwordMode() === 'manual' ? 'btn-primary' : 'btn-light-primary'"
+          (click)="useManualPassword()">Manual</button>
+      </div>
+      <input class="form-control" [type]="passwordMode() === 'manual' ? 'password' : 'text'" formControlName="password"
+        [readonly]="passwordMode() === 'suggested'" placeholder="Password" />
+      <small class="text-muted" *ngIf="passwordMode() === 'suggested'">Rule: first 2 letters of first name + first 2
+        letters of last name + last 3 digits of phone.</small>
+      <small class="text-danger d-block" *ngIf="passwordMode() === 'suggested' && !suggestedPassword()">Enter first
+        name, last name, and at least 3 phone digits.</small>
+      <small class="text-danger d-block" *ngIf="passwordMode() === 'manual' && controlHasError('password')">Password
+        must contain at least 6 characters.</small>
+    </div>
+
+    <div class="col-12" *ngIf="isAdmin">
+      <div class="form-check form-check-primary">
+        <input class="form-check-input" type="checkbox" id="employeeActive" formControlName="isActive" />
+        <label class="form-check-label" for="employeeActive">Active employee</label>
+      </div>
+    </div>
+
+    <div class="col-12 d-flex gap-2">
       <button class="btn btn-primary" type="submit" [disabled]="isSaving()">
         {{ isSaving() ? 'Saving...' : editingEmployee() ? 'Update Employee' : 'Create Employee' }}
       </button>
-      <button class="btn btn-ghost" type="button" (click)="resetEmployeeForm()">Clear</button>
+      <button class="btn btn-light-secondary" type="button" (click)="resetEmployeeForm()">Clear</button>
     </div>
   </form>
 
-  <div class="credentials-box" *ngIf="generatedCredentials() as creds">
-    <div class="credentials-title">Temporary credentials</div>
-    <div class="credentials-row"><span>Employee</span><strong>{{ creds.firstName }} {{ creds.lastName }}</strong></div>
-    <div class="credentials-row"><span>Username</span><strong>{{ creds.username }}</strong></div>
-    <div class="credentials-row"><span>Password</span><strong>{{ creds.temporaryPassword }}</strong></div>
-    <div class="credentials-row"><span>Role</span><strong>{{ creds.role }}</strong></div>
+  <div class="alert alert-light-primary mt-4" *ngIf="generatedCredentials() as creds">
+    <h6>Temporary credentials</h6>
+    <div><strong>Employee:</strong> {{ creds.firstName }} {{ creds.lastName }}</div>
+    <div><strong>Username:</strong> {{ creds.username }}</div>
+    <div><strong>Password:</strong> {{ creds.temporaryPassword }}</div>
+    <div><strong>Role:</strong> {{ creds.role }}</div>
   </div>
 </aside>
 
-<div class="detail-overlay" *ngIf="showDetailPanel()" (click)="closeDetail()"></div>
-
-<aside class="detail-panel" *ngIf="showDetailPanel()">
-  <div class="detail-header">
-    <div class="detail-title">Employee Profile</div>
-    <button class="close-btn" type="button" (click)="closeDetail()">X</button>
+<div class="modal-backdrop-soft" *ngIf="showDetailPanel()" (click)="closeDetail()"></div>
+<aside class="crud-panel detail-panel" *ngIf="showDetailPanel()">
+  <div class="panel-header">
+    <h4 class="mb-0">Employee Profile</h4>
+    <button class="btn icon btn-light-secondary" type="button" title="Close" (click)="closeDetail()">
+      <i class="bi bi-x-lg"></i>
+    </button>
   </div>
 
   <ng-container *ngIf="selectedEmployee() as emp">
-    <div class="detail-identity">
-      <div class="detail-avatar">{{ initials(emp) }}</div>
+    <div class="d-flex align-items-center mb-4">
+      <div class="avatar avatar-xl me-3"><span class="avatar-content">{{ initials(emp) }}</span></div>
       <div>
-        <div class="detail-name">{{ emp.firstName }} {{ emp.lastName }}</div>
-        <div class="detail-job">{{ emp.jobTitle || 'Employee' }}</div>
-        <span class="badge badge-blue">{{ emp.jobLevel || '-' }}</span>
+        <h4 class="mb-1">{{ emp.firstName }} {{ emp.lastName }}</h4>
+        <p class="text-muted mb-1">{{ emp.jobTitle || 'Employee' }}</p>
+        <span class="badge bg-light-primary">{{ emp.jobLevel || '-' }}</span>
       </div>
     </div>
 
-    <div class="detail-section">
-      <div class="detail-section-title">HR Information</div>
-      <div class="detail-grid">
-        <div class="detail-item"><span class="detail-key">Email</span><span class="detail-val">{{ emp.email }}</span></div>
-        <div class="detail-item"><span class="detail-key">Phone</span><span class="detail-val">{{ emp.phone || '-' }}</span></div>
-        <div class="detail-item"><span class="detail-key">Department</span><span class="detail-val">{{ emp.departmentName || '-' }}</span></div>
-        <div class="detail-item"><span class="detail-key">Manager</span><span class="detail-val">{{ emp.managerName || '-' }}</span></div>
-        <div class="detail-item"><span class="detail-key">Hire date</span><span class="detail-val">{{ emp.hireDate | date:'dd/MM/yyyy' }}</span></div>
-        <div class="detail-item"><span class="detail-key">Salary</span><span class="detail-val">{{ (emp.salary | number:'1.0-0') || '-' }} TND</span></div>
-        <div class="detail-item">
-          <span class="detail-key">Status</span>
-          <span class="badge" [ngClass]="emp.isActive ? 'badge-green' : 'badge-red'">
-            {{ emp.isActive ? 'Active' : 'Inactive' }}
-          </span>
-        </div>
-        <div class="detail-item"><span class="detail-key">Role</span><span class="detail-val">{{ emp.role || '-' }}</span></div>
-      </div>
+    <h6 class="text-muted text-uppercase">HR Information</h6>
+    <div class="info-list">
+      <div><span>Email</span><strong>{{ emp.email }}</strong></div>
+      <div><span>Phone</span><strong>{{ emp.phone || '-' }}</strong></div>
+      <div><span>Department</span><strong>{{ emp.departmentName || '-' }}</strong></div>
+      <div><span>Manager</span><strong>{{ emp.managerName || '-' }}</strong></div>
+      <div><span>Hire date</span><strong>{{ emp.hireDate | date:'dd/MM/yyyy' }}</strong></div>
+      <div><span>Salary</span><strong>{{ (emp.salary | number:'1.0-0') || '-' }} TND</strong></div>
+      <div><span>Role</span><strong>{{ emp.role || '-' }}</strong></div>
+      <div><span>Status</span><span class="badge" [ngClass]="emp.isActive ? 'bg-light-success' : 'bg-light-danger'">{{
+          emp.isActive ? 'Active' : 'Inactive' }}</span></div>
     </div>
 
-    <div class="detail-section">
-      <div class="detail-section-title">User Account</div>
-      <div *ngIf="selectedUserAccount() as account">
-        <div class="detail-grid">
-          <div class="detail-item"><span class="detail-key">Username</span><span class="detail-val">{{ account.username }}</span></div>
-          <div class="detail-item"><span class="detail-key">Role</span><span class="detail-val">{{ account.role }}</span></div>
-          <div class="detail-item"><span class="detail-key">Created</span><span class="detail-val">{{ account.createdAt | date:'dd/MM/yyyy' }}</span></div>
-          <div class="detail-item"><span class="detail-key">Last login</span><span class="detail-val">{{ (account.lastLoginAt | date:'dd/MM/yyyy HH:mm') || 'Never' }}</span></div>
-          <div class="detail-item">
-            <span class="detail-key">Active</span>
-            <span class="badge" [ngClass]="account.isActive ? 'badge-green' : 'badge-red'">
-              {{ account.isActive ? 'Yes' : 'No' }}
-            </span>
-          </div>
-        </div>
-
-        <div class="password-section" *ngIf="isAdmin">
-          <div class="detail-section-title" style="margin-top:1rem">Reset password</div>
-          <div class="detail-note">Type a password yourself or generate a temporary one.</div>
-          <div class="password-row">
-            <input
-              type="text"
-              class="detail-input"
-              placeholder="New password"
-              [value]="newPassword()"
-              (input)="newPassword.set($any($event.target).value)"
-            />
-            <div class="password-actions">
-              <button type="button" class="btn btn-ghost" (click)="generatePasswordDraft()">Generate</button>
-              <button type="button" class="btn btn-warning" [disabled]="isResettingPassword()" (click)="resetPassword()">
-                {{ isResettingPassword() ? 'Saving...' : 'Update password' }}
-              </button>
-            </div>
-          </div>
-          <div class="msg-success" *ngIf="passwordMsg()">{{ passwordMsg() }}</div>
-          <div class="msg-error" *ngIf="passwordError()">{{ passwordError() }}</div>
+    <h6 class="text-muted text-uppercase mt-4">User Account</h6>
+    <ng-container *ngIf="selectedUserAccount() as account; else noAccount">
+      <div class="info-list">
+        <div><span>Username</span><strong>{{ account.username }}</strong></div>
+        <div><span>Role</span><strong>{{ account.role }}</strong></div>
+        <div><span>Created</span><strong>{{ account.createdAt | date:'dd/MM/yyyy' }}</strong></div>
+        <div><span>Last login</span><strong>{{ (account.lastLoginAt | date:'dd/MM/yyyy HH:mm') || 'Never' }}</strong>
         </div>
       </div>
 
-      <div *ngIf="!selectedUserAccount()">
-        <div class="detail-note">This employee does not have a login account yet.</div>
-        <button type="button" class="btn btn-primary" style="margin-top:.75rem" *ngIf="!showCreateAccount() && isAdmin"
-          (click)="showCreateAccount.set(true)">
-          + Create account
-        </button>
+      <div class="reset-box" *ngIf="isAdmin">
+        <label class="form-label">Reset password</label>
+        <input class="form-control mb-2" type="text" placeholder="New password" [value]="newPassword()"
+          (input)="newPassword.set($any($event.target).value)" />
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-light-primary" (click)="generatePasswordDraft()">Generate</button>
+          <button type="button" class="btn btn-warning" [disabled]="isResettingPassword()" (click)="resetPassword()">
+            {{ isResettingPassword() ? 'Saving...' : 'Update password' }}
+          </button>
+        </div>
+        <div class="text-success mt-2" *ngIf="passwordMsg()">{{ passwordMsg() }}</div>
+        <div class="text-danger mt-2" *ngIf="passwordError()">{{ passwordError() }}</div>
+      </div>
+    </ng-container>
 
-        <div class="create-account-form" *ngIf="showCreateAccount()">
-          <input type="text" class="detail-input" placeholder="Username"
-            [value]="newAccountUsername()"
-            (input)="newAccountUsername.set($any($event.target).value)" />
-          <input type="password" class="detail-input" placeholder="Password (min 6 chars)"
-            [value]="newAccountPassword()"
-            (input)="newAccountPassword.set($any($event.target).value)" />
-          <select class="detail-input" [value]="newAccountRole()"
+    <ng-template #noAccount>
+      <p class="text-muted">This employee does not have a login account yet.</p>
+      <button type="button" class="btn btn-primary" *ngIf="!showCreateAccount() && isAdmin"
+        (click)="showCreateAccount.set(true)">
+        <i class="bi bi-person-plus-fill"></i>
+        Create account
+      </button>
+      <div class="row g-2 mt-2" *ngIf="showCreateAccount()">
+        <div class="col-12"><input type="text" class="form-control" placeholder="Username"
+            [value]="newAccountUsername()" (input)="newAccountUsername.set($any($event.target).value)" /></div>
+        <div class="col-12"><input type="password" class="form-control" placeholder="Password"
+            [value]="newAccountPassword()" (input)="newAccountPassword.set($any($event.target).value)" /></div>
+        <div class="col-12">
+          <select class="form-select" [value]="newAccountRole()"
             (change)="newAccountRole.set($any($event.target).value)">
             <option value="Employee">Employee</option>
             <option value="Manager">Manager</option>
             <option value="Admin">Admin</option>
           </select>
-          <button type="button" class="btn btn-primary" (click)="createAccount()">Create account</button>
-          <button type="button" class="btn btn-ghost" (click)="showCreateAccount.set(false)">Cancel</button>
         </div>
-        <div class="msg-success" *ngIf="createAccountMsg()">{{ createAccountMsg() }}</div>
+        <div class="col-12 d-flex gap-2">
+          <button type="button" class="btn btn-primary" (click)="createAccount()">Create account</button>
+          <button type="button" class="btn btn-light-secondary" (click)="showCreateAccount.set(false)">Cancel</button>
+        </div>
       </div>
-    </div>
+      <div class="text-success mt-2" *ngIf="createAccountMsg()">{{ createAccountMsg() }}</div>
+    </ng-template>
 
-    <div class="detail-actions" *ngIf="isAdmin">
-      <button type="button" class="btn btn-outline" (click)="startEdit(emp)">Edit</button>
-      <button type="button" class="btn btn-danger" (click)="deleteEmployee(emp)">Delete</button>
+    <div class="d-flex gap-2 mt-4" *ngIf="isAdmin">
+      <button type="button" class="btn btn-light-primary" (click)="startEdit(emp)">
+        <i class="bi bi-pencil-square"></i>
+        Edit
+      </button>
+      <button type="button" class="btn btn-light-danger" (click)="deleteEmployee(emp)">
+        <i class="bi bi-trash"></i>
+        Delete
+      </button>
     </div>
   </ng-container>
 </aside>

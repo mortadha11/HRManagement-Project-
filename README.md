@@ -1,92 +1,174 @@
 # HRManagement API
 
-Full-stack HR management application built with ASP.NET Core, Entity Framework Core, SQL Server, and Angular.
+Full-stack HR management application built with **ASP.NET Core (.NET 10)**, **Entity Framework Core**, **SQL Server**, and **Angular 18**.
 
-## What this project does now
+---
 
-- Authenticates users with JWT and BCrypt.
-- Routes users by role:
-  - `Admin` and `Manager` go to the dashboard.
-  - `Employee` goes to the profile page.
-- Manages employees from the admin dashboard.
-- Stores and reads data from SQL Server.
-- Exposes API endpoints for employees, departments, contracts, leaves, and auth.
-- Lets an employee edit only personal fields like email and phone.
+## What this project does
+
+- Authenticates users with JWT and BCrypt
+- Routes users by role (Admin/Manager → dashboard, Employee → profile)
+- Manages employees, departments, contracts, and leaves from the admin dashboard
+- Lets employees update their profile and change their own password
+- Lets users **self-recover their password** without needing admin intervention
+- Exposes a documented REST API via Swagger at `/swagger`
+
+---
+
+## Architecture — Onion Architecture
+
+The backend is organized using **Onion Architecture** (folder-based layers within one `.csproj`):
+
+```
+HRManagement.API/
+│
+├── Domain/                       ← Core layer — NO external dependencies
+│   ├── Entities/                 Employee, User, Department, Contract, Leave
+│   └── Interfaces/               IUserRepository, IEmployeeRepository
+│
+├── Application/                  ← Use case layer — depends only on Domain
+│   ├── DTOs/                     AppDtos.cs (all request/response shapes)
+│   └── Interfaces/               ITokenService, ICredentialGeneratorService
+│
+├── Infrastructure/               ← Technical layer — EF Core, DB, crypto
+│   ├── Data/                     AppDbContext.cs
+│   ├── Repositories/             UserRepository, EmployeeRepository
+│   └── Services/                 TokenService, CredentialGeneratorService
+│
+└── Presentation/                 ← Thin HTTP layer — only routing & HTTP concern
+    └── Controllers/              AuthController, EmployeesController,
+                                  DepartmentsController, ContractsController,
+                                  LeavesController, MigrateController
+```
+
+> **Dependency rule:** outer layers depend on inner layers. Controllers → Application interfaces. Infrastructure implements Application interfaces.
+
+---
+
+## Forgot Password Workflow
+
+The app supports **self-service password recovery** without an email server:
+
+1. User clicks **"Forgot your password?"** on the login page
+2. User enters their **username** on the `/forgot-password` page
+3. The Angular app calls `POST /api/auth/forgot-password` (no token required)
+4. The backend generates a **secure random 12-character password**
+5. The new password is hashed with BCrypt and saved into the `Users` table
+6. The **temporary password is returned in the response** and displayed in the UI
+7. The user copies it, logs in normally, then changes it from their profile page
+
+> The endpoint always returns HTTP 200 regardless of whether the username exists, to prevent username enumeration attacks.
+
+---
+
+## API Endpoints
+
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| POST | `/api/auth/login` | None | Log in, get JWT |
+| POST | `/api/auth/forgot-password` | None | Self-service password recovery |
+| GET  | `/api/auth/me/{employeeId}` | Bearer | Get own user info |
+| GET  | `/api/auth/user/{employeeId}` | Admin/Manager | Get user account |
+| POST | `/api/auth/reset-password` | Admin/Manager | Admin password reset |
+| POST | `/api/auth/create-account` | Admin/Manager | Create user account |
+| POST | `/api/auth/change-password` | Bearer | Change own password |
+| GET  | `/api/employees` | Bearer | List all employees |
+| POST | `/api/employees` | Admin/Manager | Create employee + account |
+| GET  | `/api/employees/{id}` | Bearer | Get one employee |
+| PUT  | `/api/employees/{id}` | Admin/Manager | Update employee |
+| DELETE | `/api/employees/{id}` | Admin | Delete employee |
+| PUT  | `/api/employees/{id}/profile` | Bearer (own) | Update own profile |
+| POST | `/api/employees/{id}/reset-password` | Admin/Manager | Reset employee password |
+| GET  | `/api/departments` | Bearer | List departments |
+| GET  | `/api/contracts` | Bearer | List contracts |
+| GET  | `/api/leaves` | Bearer | List leaves |
+
+---
 
 ## Current workflow
 
 ### Login
-1. User opens the Angular app.
-2. User logs in with username and password.
-3. Backend verifies the password with BCrypt.
-4. Backend returns a JWT token and the user role.
-5. Angular stores the session in `sessionStorage`.
-6. Guards send the user to the right page.
+1. User opens the Angular app at `/`
+2. Landing page is shown (Startup2 template)
+3. User clicks Login → goes to `/login`
+4. Backend verifies BCrypt password, returns JWT + role
+5. Angular stores session in `sessionStorage`
+6. Guards route: Admin/Manager → `/admin/dashboard`, Employee → `/employee/profile`
+
+### Forgot Password
+1. User clicks "Forgot your password?" on the login page
+2. User is routed to `/forgot-password`
+3. Enters username → clicks Generate
+4. If found: temporary password shown on-screen with clipboard copy button
+5. User logs in with temp password, then changes it from profile page
 
 ### Admin dashboard
-1. Dashboard loads employees, departments, contracts, and leaves from the API.
-2. The employee table shows active employees only.
-3. `Add Employee` opens the employee form.
-4. Saving a new employee creates:
-   - a row in `Employees`
-   - a linked row in `Users`
-   - a generated username
-   - a temporary password displayed once
-5. `Edit` updates the employee record.
-6. `Delete` removes the employee from the database, and the API blocks deleting a manager who still has active subordinates.
-7. `Reset password` generates a new temporary password for the linked user account.
+1. Dashboard loads employees, departments, contracts, leaves
+2. Add employee → creates Employee + User rows + generates credentials
+3. Edit → updates employee record
+4. Delete → removes employee (blocks if has active subordinates)
+5. Reset password → generates new temp password shown once
 
 ### Employee profile
-1. The employee logs in.
-2. The profile page loads the employee by `employeeId` from the token.
-3. The employee can update email and phone only.
+1. Employee logs in, profile loads by `employeeId` from JWT
+2. Can update name, email, phone
+3. Can change password (must know current password)
 
-## Backend structure
+---
 
-- `Program.cs` configures SQL Server, JWT, Swagger, CORS, and JSON handling.
-- `Data/AppDbContext.cs` defines the EF Core database model and relationships.
-- `Models/` contains `Employee`, `Department`, `Contract`, `Leave`, and `User`.
-- `Controllers/AuthController.cs` handles login, current user info, account creation, and password reset.
-- `Controllers/EmployeesController.cs` handles employee CRUD and the employee/password workflow.
-- `Controllers/DepartmentsController.cs`, `ContractsController.cs`, `LeavesController.cs` expose the other HR entities.
-- `Services/TokenService.cs` builds JWT tokens.
-- `Services/CredentialGeneratorService.cs` generates unique usernames and temporary passwords.
-- `DTOs/EmployeeDtos.cs` defines request/response payloads for employee creation and update.
+## Backend structure (Onion)
+
+| Layer | Location | Responsibility |
+|-------|----------|---------------|
+| Domain Entities | `Domain/Entities/` | POCO classes, no framework dependencies |
+| Domain Interfaces | `Domain/Interfaces/` | `IUserRepository`, `IEmployeeRepository` |
+| Application DTOs | `Application/DTOs/AppDtos.cs` | All request/response shapes |
+| Application Interfaces | `Application/Interfaces/` | `ITokenService`, `ICredentialGeneratorService` |
+| Infrastructure Data | `Infrastructure/Data/AppDbContext.cs` | EF Core DbContext, relationship config |
+| Infrastructure Repos | `Infrastructure/Repositories/` | EF implementations of domain interfaces |
+| Infrastructure Services | `Infrastructure/Services/` | JWT token generation, credential generation |
+| Presentation | `Presentation/Controllers/` | Thin HTTP controllers, delegate to services |
+
+---
 
 ## Frontend structure
 
-- `src/app/pages/auth/login/` contains the login screen.
-- `src/app/pages/admin/dashboard/` contains the admin/manager dashboard.
-- `src/app/pages/employee/profile/` contains the employee profile screen.
-- `src/app/services/auth.service.ts` stores the session user and JWT.
-- `src/app/services/hr-api.ts` wraps the API calls with the Bearer token.
-- `src/app/guards/auth.guard.ts` protects routes by login state and role.
+| Path | Purpose |
+|------|---------|
+| `src/app/pages/auth/login/` | Login page (Startup2 style) |
+| `src/app/pages/auth/forgot-password/` | Self-service password recovery |
+| `src/app/pages/landing/` | Public landing page (Startup2) |
+| `src/app/pages/admin/dashboard/` | Admin/Manager dashboard (Mazer style) |
+| `src/app/pages/employee/profile/` | Employee profile page (Mazer style) |
+| `src/app/services/auth.service.ts` | Session management (sessionStorage + JWT) |
+| `src/app/services/hr-api.ts` | All API calls (with Bearer auth header) |
+| `src/app/guards/auth.guard.ts` | Route protection by role |
+| `hr-admin/public/startup2/` | Static Startup2 template assets |
+| `hr-admin/public/mazer/` | Static Mazer template assets |
+
+---
 
 ## Database model
 
-Main relationships:
+- `Employee` belongs to an optional `Department`
+- `Employee` can have one `Manager` and many `Subordinates` (self-referencing)
+- `Employee` can have many `Contracts` and many `Leaves`
+- `User` is linked one-to-one with `Employee`
 
-- `Employee` belongs to an optional `Department`.
-- `Employee` can have one `Manager` and many `Subordinates`.
-- `Employee` can have many `Contracts`.
-- `Employee` can have many `Leaves`.
-- `User` is linked one-to-one with `Employee`.
+---
 
-## Important notes
+## Dev URLs
 
-- The admin create flow is now the recommended path. It creates the employee and the user account together.
-- Manual account creation still exists in the dashboard detail panel as a fallback for older employees with no account.
-- The project currently uses local development URLs:
-  - API: `http://localhost:5037`
-  - Angular: `http://localhost:4200`
-- The Angular dashboard stylesheet is a little larger than the default budget because the page is doing a lot of work in one place.
+- **API:** `http://localhost:5037`
+- **Swagger:** `http://localhost:5037/swagger`
+- **Angular:** `http://localhost:4200`
 
-
+---
 
 ## What is still worth improving
 
-- Split the dashboard into smaller pages or components.
-- Remove the fallback manual account creation once you no longer need legacy support.
-- Add more role checks on any remaining sensitive endpoints.
-- Add tests for employee creation, password reset, and route guards.
-- Clean up any remaining encoding artifacts in old files if you see them in the editor.
+- Split the dashboard into smaller Angular components per section
+- Add email SMTP for a proper "send to inbox" forgot-password flow
+- Add unit tests for: employee creation, password reset, forgot-password, route guards
+- Enforce stricter authorization on Departments/Contracts/Leaves endpoints
+- Remove the `MigrateController` once all passwords are properly BCrypt-hashed

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -9,12 +9,12 @@ namespace HRManagement.API.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // ── Drop FK avant modification ────────────────────────
+            // -- Drop FK avant modification ------------------------
             migrationBuilder.DropForeignKey(
                 name: "FK_Employees_Departments_DepartmentId",
                 table: "Employees");
 
-            // ── Users : Username → nvarchar(450) pour index unique ─
+            // -- Users : Username ? nvarchar(450) pour index unique -
             migrationBuilder.AlterColumn<string>(
                 name: "Username",
                 table: "Users",
@@ -23,7 +23,7 @@ namespace HRManagement.API.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
-            // ── Employees : Salary precision ──────────────────────
+            // -- Employees : Salary precision ----------------------
             migrationBuilder.AlterColumn<decimal>(
                 name: "Salary",
                 table: "Employees",
@@ -35,7 +35,7 @@ namespace HRManagement.API.Migrations
                 oldType: "decimal(18,2)",
                 oldNullable: true);
 
-            // ── Employees : Email → nvarchar(450) pour index unique
+            // -- Employees : Email ? nvarchar(450) pour index unique
             migrationBuilder.AlterColumn<string>(
                 name: "Email",
                 table: "Employees",
@@ -44,22 +44,22 @@ namespace HRManagement.API.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
-            // ── SUPPRIMÉ : JobTitle existe déjà dans la DB ────────
+            // -- SUPPRIM� : JobTitle existe d�j� dans la DB --------
             // migrationBuilder.AddColumn<string>(
             //     name: "JobTitle", ...);
 
-            // ── Employees : JobLevel (nouvelle colonne) ───────────
+            // -- Employees : JobLevel (nouvelle colonne) -----------
             migrationBuilder.AddColumn<string>(
                 name: "JobLevel",
                 table: "Employees",
                 type: "nvarchar(max)",
                 nullable: true);
 
-            // ── SUPPRIMÉ : ManagerId existe déjà dans la DB ───────
+            // -- SUPPRIM� : ManagerId existe d�j� dans la DB -------
             // migrationBuilder.AddColumn<int>(
             //     name: "ManagerId", ...);
 
-            // ── Contracts : Salary precision ──────────────────────
+            // -- Contracts : Salary precision ----------------------
             migrationBuilder.AlterColumn<decimal>(
                 name: "Salary",
                 table: "Contracts",
@@ -71,7 +71,7 @@ namespace HRManagement.API.Migrations
                 oldType: "decimal(18,2)",
                 oldNullable: true);
 
-            // ── Index ─────────────────────────────────────────────
+            // -- Index ---------------------------------------------
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Username",
                 table: "Users",
@@ -89,7 +89,7 @@ namespace HRManagement.API.Migrations
                 table: "Employees",
                 column: "ManagerId");
 
-            // ── FK Employees → Departments ────────────────────────
+            // -- FK Employees ? Departments ------------------------
             migrationBuilder.AddForeignKey(
                 name: "FK_Employees_Departments_DepartmentId",
                 table: "Employees",
@@ -98,7 +98,7 @@ namespace HRManagement.API.Migrations
                 principalColumn: "Id",
                 onDelete: ReferentialAction.SetNull);
 
-            // ── FK Employees → Employees (Manager) ───────────────
+            // -- FK Employees ? Employees (Manager) ---------------
             migrationBuilder.AddForeignKey(
                 name: "FK_Employees_Employees_ManagerId",
                 table: "Employees",
@@ -130,7 +130,7 @@ namespace HRManagement.API.Migrations
                 name: "IX_Employees_ManagerId",
                 table: "Employees");
 
-            // ── SUPPRIMÉ : on ne drop pas JobTitle et ManagerId ───
+            // -- SUPPRIM� : on ne drop pas JobTitle et ManagerId ---
             // car ils existaient avant cette migration
             // migrationBuilder.DropColumn(name: "JobTitle", ...);
             // migrationBuilder.DropColumn(name: "ManagerId", ...);

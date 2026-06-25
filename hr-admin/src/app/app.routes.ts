@@ -3,6 +3,11 @@ import { adminGuard, employeeGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
+    path: '',
+    loadComponent: () =>
+      import('./pages/landing/landing').then(m => m.LandingComponent)
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./pages/auth/login/login').then(m => m.LoginComponent)
@@ -19,6 +24,10 @@ export const routes: Routes = [
       import('./pages/employee/profile/profile').then(m => m.EmployeeProfile),
     canActivate: [employeeGuard]
   },
-  { path: '',   redirectTo: 'login', pathMatch: 'full' },
-  { path: '**', redirectTo: 'login' }
+  {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./pages/auth/forgot-password/forgot-password').then(m => m.ForgotPassword)
+  },
+  { path: '**', redirectTo: '' }
 ];

@@ -1,187 +1,192 @@
-<div class="profile-wrapper">
-  <aside class="sidebar">
-    <div class="logo">
-      <div class="logo-icon">HR</div>
-      <div>
-        <div class="logo-text">HRManage</div>
-        <div class="logo-sub">Mon Espace</div>
-      </div>
-    </div>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/mazer/assets/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/mazer/assets/css/app.css">
 
-    <div class="nav-section">
-      <div class="nav-label">Mon Compte</div>
-      <div class="nav-item active"><span class="icon">#</span> Mon Profil</div>
-    </div>
-
-    <div class="sidebar-footer">
-      <div class="user-card">
-        <div class="avatar">{{ user?.fullName?.substring(0,2)?.toUpperCase() }}</div>
-        <div>
-          <div class="user-name">{{ user?.fullName }}</div>
-          <div class="user-role">{{ user?.role }}</div>
+<div id="app" class="profile-page">
+  <div id="sidebar" class="active">
+    <div class="sidebar-wrapper active">
+      <div class="sidebar-header">
+        <div class="d-flex align-items-center gap-2">
+          <div class="brand-mark">HR</div>
+          <div>
+            <h5 class="mb-0">HRManage</h5>
+            <small class="text-muted">Mon Espace</small>
+          </div>
         </div>
       </div>
-      <button class="btn-logout" type="button" (click)="logout()">Deconnexion</button>
-    </div>
-  </aside>
 
-  <main class="main">
-    <header class="topbar">
-      <div>
-        <div class="page-title">Mon Profil</div>
-        <div class="page-sub">Gerez vos informations personnelles</div>
+      <div class="sidebar-menu">
+        <ul class="menu">
+          <li class="sidebar-title">Mon Compte</li>
+          <li class="sidebar-item active">
+            <a class="sidebar-link">
+              <i class="bi bi-person-circle"></i>
+              <span>Mon Profil</span>
+            </a>
+          </li>
+        </ul>
       </div>
+
+      <div class="sidebar-user">
+        <div class="avatar avatar-lg">
+          <span class="avatar-content">{{ user?.fullName?.substring(0,2)?.toUpperCase() }}</span>
+        </div>
+        <div class="min-w-0">
+          <h6 class="mb-0 text-truncate">{{ user?.fullName }}</h6>
+          <small class="text-muted">{{ user?.role }}</small>
+        </div>
+        <button class="btn icon btn-light-danger ms-auto" type="button" title="Deconnexion" (click)="logout()">
+          <i class="bi bi-box-arrow-left"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="main" class="layout-navbar">
+    <header class="mb-3">
+      <nav class="navbar navbar-expand navbar-light">
+        <div class="container-fluid">
+          <div>
+            <h3 class="mb-0">Mon Profil</h3>
+            <p class="text-muted mb-0">Gerez vos informations personnelles</p>
+          </div>
+        </div>
+      </nav>
     </header>
 
-    <section class="content">
-      <div class="alert alert-error" *ngIf="error()"> {{ error() }}</div>
-      <div class="alert alert-success" *ngIf="success()"> {{ success() }}</div>
-
-      <div class="loading" *ngIf="isLoading()">Chargement de votre profil...</div>
-
-      <div class="profile-grid" *ngIf="!isLoading() && employee()">
-        <div class="card identity-card">
-          <div class="identity-header">
-            <div class="big-avatar">{{ initials(employee()!) }}</div>
-            <div>
-              <div class="identity-name">{{ employee()!.firstName }} {{ employee()!.lastName }}</div>
-              <div class="identity-title">{{ employee()!.jobTitle || 'Employe' }}</div>
-              <span class="badge badge-blue">{{ employee()!.jobLevel || '-' }}</span>
-            </div>
-          </div>
-
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="info-label">Departement</div>
-              <div class="info-value">{{ employee()!.departmentName || '-' }}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Manager</div>
-              <div class="info-value">{{ employee()!.managerName || '-' }}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Date d'embauche</div>
-              <div class="info-value">{{ employee()!.hireDate | date: 'dd/MM/yyyy' }}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Statut</div>
-              <div class="info-value">
-                <span class="badge" [ngClass]="employee()!.isActive ? 'badge-green' : 'badge-red'">
-                  {{ employee()!.isActive ? 'Actif' : 'Inactif' }}
-                </span>
-              </div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Username</div>
-              <div class="info-value">{{ user?.username || '-' }}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Role</div>
-              <div class="info-value">{{ employee()!.role || '-' }}</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card edit-card">
-          <div class="card-header">
-            <div class="card-title">Modifier mes informations</div>
-            <div class="card-sub">Vous pouvez modifier votre nom, email et telephone</div>
-          </div>
-
-          <form [formGroup]="profileForm" (ngSubmit)="save()">
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Prenom</label>
-                <input type="text" formControlName="firstName" />
-                <span class="field-error" *ngIf="profileForm.controls.firstName.invalid && profileForm.controls.firstName.touched">
-                  Prenom requis
-                </span>
-              </div>
-
-              <div class="form-group">
-                <label>Nom</label>
-                <input type="text" formControlName="lastName" />
-                <span class="field-error" *ngIf="profileForm.controls.lastName.invalid && profileForm.controls.lastName.touched">
-                  Nom requis
-                </span>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Email</label>
-              <input type="email" formControlName="email" placeholder="votre@email.com" />
-              <span class="field-error" *ngIf="profileForm.controls.email.invalid && profileForm.controls.email.touched">
-                Email invalide
-              </span>
-            </div>
-
-            <div class="form-group">
-              <label>Telephone</label>
-              <input type="tel" formControlName="phone" placeholder="+216 XX XXX XXX" />
-            </div>
-
-            <div class="readonly-section">
-              <div class="readonly-label">Champs non modifiables (geres par RH)</div>
-              <div class="readonly-grid">
-                <div class="readonly-item">
-                  <span class="readonly-key">Salaire</span>
-                  <span class="readonly-val">{{ (employee()!.salary | number:'1.0-0') || '-' }} TND</span>
-                </div>
-                <div class="readonly-item">
-                  <span class="readonly-key">Poste</span>
-                  <span class="readonly-val">{{ employee()!.jobTitle || '-' }}</span>
-                </div>
-              </div>
-            </div>
-
-            <button class="btn btn-primary" type="submit" [disabled]="isSaving() || profileForm.invalid">
-              {{ isSaving() ? 'Enregistrement...' : 'Enregistrer les modifications' }}
-            </button>
-          </form>
-
-          <div class="password-card">
-            <div class="card-header">
-              <div class="card-title">Changer mon mot de passe</div>
-              <div class="card-sub">Utilisez votre mot de passe actuel pour valider le changement</div>
-            </div>
-
-            <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
-              <div class="form-group">
-                <label>Mot de passe actuel</label>
-                <input type="password" formControlName="currentPassword" />
-                <span class="field-error" *ngIf="passwordForm.controls.currentPassword.invalid && passwordForm.controls.currentPassword.touched">
-                  Mot de passe actuel requis
-                </span>
-              </div>
-
-              <div class="form-grid">
-                <div class="form-group">
-                  <label>Nouveau mot de passe</label>
-                  <input type="password" formControlName="newPassword" />
-                  <span class="field-error" *ngIf="passwordForm.controls.newPassword.invalid && passwordForm.controls.newPassword.touched">
-                    Minimum 6 caracteres
-                  </span>
-                </div>
-
-                <div class="form-group">
-                  <label>Confirmer le mot de passe</label>
-                  <input type="password" formControlName="confirmPassword" />
-                  <span class="field-error" *ngIf="passwordForm.controls.confirmPassword.invalid && passwordForm.controls.confirmPassword.touched">
-                    Confirmation requise
-                  </span>
-                </div>
-              </div>
-
-              <div class="field-error" *ngIf="passwordError()">{{ passwordError() }}</div>
-              <div class="success-text" *ngIf="passwordSuccess()">{{ passwordSuccess() }}</div>
-
-              <button class="btn btn-primary" type="submit" [disabled]="isChangingPassword() || passwordForm.invalid">
-                {{ isChangingPassword() ? 'Mise a jour...' : 'Mettre a jour le mot de passe' }}
-              </button>
-            </form>
-          </div>
-        </div>
+    <div id="main-content">
+      <div class="alert alert-danger" *ngIf="error()">{{ error() }}</div>
+      <div class="alert alert-success" *ngIf="success()">{{ success() }}</div>
+      <div class="card" *ngIf="isLoading()">
+        <div class="card-body text-muted">Chargement de votre profil...</div>
       </div>
-    </section>
-  </main>
+
+      <section class="row" *ngIf="!isLoading() && employee()">
+        <div class="col-12 col-xl-4">
+          <div class="card profile-card">
+            <div class="card-body">
+              <div class="text-center mb-4">
+                <div class="avatar avatar-xl mx-auto mb-3">
+                  <span class="avatar-content">{{ initials(employee()!) }}</span>
+                </div>
+                <h4 class="mb-1">{{ employee()!.firstName }} {{ employee()!.lastName }}</h4>
+                <p class="text-muted mb-2">{{ employee()!.jobTitle || 'Employe' }}</p>
+                <span class="badge bg-light-primary">{{ employee()!.jobLevel || '-' }}</span>
+              </div>
+
+              <div class="profile-info">
+                <div><span>Departement</span><strong>{{ employee()!.departmentName || '-' }}</strong></div>
+                <div><span>Manager</span><strong>{{ employee()!.managerName || '-' }}</strong></div>
+                <div><span>Date d'embauche</span><strong>{{ employee()!.hireDate | date: 'dd/MM/yyyy' }}</strong></div>
+                <div><span>Username</span><strong>{{ user?.username || '-' }}</strong></div>
+                <div><span>Role</span><strong>{{ employee()!.role || '-' }}</strong></div>
+                <div>
+                  <span>Statut</span>
+                  <span class="badge" [ngClass]="employee()!.isActive ? 'bg-light-success' : 'bg-light-danger'">
+                    {{ employee()!.isActive ? 'Actif' : 'Inactif' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-xl-8">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">Modifier mes informations</h4>
+              <p class="text-muted mb-0">Vous pouvez modifier votre nom, email et telephone</p>
+            </div>
+            <div class="card-body">
+              <form [formGroup]="profileForm" (ngSubmit)="save()">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label">Prenom</label>
+                    <input type="text" class="form-control" formControlName="firstName" />
+                    <small class="text-danger" *ngIf="profileForm.controls.firstName.invalid && profileForm.controls.firstName.touched">
+                      Prenom requis
+                    </small>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Nom</label>
+                    <input type="text" class="form-control" formControlName="lastName" />
+                    <small class="text-danger" *ngIf="profileForm.controls.lastName.invalid && profileForm.controls.lastName.touched">
+                      Nom requis
+                    </small>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" formControlName="email" placeholder="votre@email.com" />
+                    <small class="text-danger" *ngIf="profileForm.controls.email.invalid && profileForm.controls.email.touched">
+                      Email invalide
+                    </small>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Telephone</label>
+                    <input type="tel" class="form-control" formControlName="phone" placeholder="+216 XX XXX XXX" />
+                  </div>
+                </div>
+
+                <div class="readonly-box mt-4">
+                  <h6 class="text-muted text-uppercase">Champs geres par RH</h6>
+                  <div class="row">
+                    <div class="col-md-6"><span>Salaire</span><strong>{{ (employee()!.salary | number:'1.0-0') || '-' }} TND</strong></div>
+                    <div class="col-md-6"><span>Poste</span><strong>{{ employee()!.jobTitle || '-' }}</strong></div>
+                  </div>
+                </div>
+
+                <button class="btn btn-primary mt-4" type="submit" [disabled]="isSaving() || profileForm.invalid">
+                  <i class="bi bi-save"></i>
+                  {{ isSaving() ? 'Enregistrement...' : 'Enregistrer les modifications' }}
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">Changer mon mot de passe</h4>
+              <p class="text-muted mb-0">Utilisez votre mot de passe actuel pour valider le changement</p>
+            </div>
+            <div class="card-body">
+              <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label">Mot de passe actuel</label>
+                    <input type="password" class="form-control" formControlName="currentPassword" />
+                    <small class="text-danger" *ngIf="passwordForm.controls.currentPassword.invalid && passwordForm.controls.currentPassword.touched">
+                      Mot de passe actuel requis
+                    </small>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Nouveau mot de passe</label>
+                    <input type="password" class="form-control" formControlName="newPassword" />
+                    <small class="text-danger" *ngIf="passwordForm.controls.newPassword.invalid && passwordForm.controls.newPassword.touched">
+                      Minimum 6 caracteres
+                    </small>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label">Confirmer le mot de passe</label>
+                    <input type="password" class="form-control" formControlName="confirmPassword" />
+                    <small class="text-danger" *ngIf="passwordForm.controls.confirmPassword.invalid && passwordForm.controls.confirmPassword.touched">
+                      Confirmation requise
+                    </small>
+                  </div>
+                </div>
+
+                <div class="text-danger mt-3" *ngIf="passwordError()">{{ passwordError() }}</div>
+                <div class="text-success mt-3" *ngIf="passwordSuccess()">{{ passwordSuccess() }}</div>
+
+                <button class="btn btn-primary mt-4" type="submit" [disabled]="isChangingPassword() || passwordForm.invalid">
+                  <i class="bi bi-key-fill"></i>
+                  {{ isChangingPassword() ? 'Mise a jour...' : 'Mettre a jour le mot de passe' }}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
 </div>

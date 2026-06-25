@@ -1,78 +1,120 @@
-<div class="login-wrapper">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+<link href="/startup2/css/bootstrap.min.css" rel="stylesheet">
+<link href="/startup2/css/style.css" rel="stylesheet">
 
-  <!-- Left Side — Branding -->
-  <div class="login-left">
-    <div class="brand">
-      <div class="brand-icon">👥</div>
-      <h1 class="brand-name">HR<span>Management</span></h1>
-      <p class="brand-desc">Gérez vos ressources humaines efficacement</p>
+<div class="container-fluid bg-dark px-5 d-none d-lg-block">
+  <div class="row gx-0">
+    <div class="col-lg-8 text-center text-lg-start mb-2 mb-lg-0">
+      <div class="d-inline-flex align-items-center" style="height: 45px;">
+        <small class="me-3 text-light"><i class="fa fa-user-tie me-2"></i>HRManage</small>
+        <small class="me-3 text-light"><i class="fa fa-shield-alt me-2"></i>Secure sign in</small>
+        <small class="text-light"><i class="fa fa-database me-2"></i>Connected to the API</small>
+      </div>
     </div>
-    <div class="brand-features">
-      <div class="feature"><span class="feature-icon">✅</span><span>Gestion des employés</span></div>
-      <div class="feature"><span class="feature-icon">✅</span><span>Suivi des congés</span></div>
-      <div class="feature"><span class="feature-icon">✅</span><span>Gestion des contrats</span></div>
-      <div class="feature"><span class="feature-icon">✅</span><span>Tableaux de bord</span></div>
+    <div class="col-lg-4 text-center text-lg-end">
+      <div class="d-inline-flex align-items-center" style="height: 45px;">
+        <a routerLink="/" class="btn btn-sm btn-outline-light px-3">Home</a>
+      </div>
     </div>
   </div>
+</div>
 
-  <!-- Right Side — Login Form -->
-  <div class="login-right">
-    <div class="login-card">
+<div class="container-fluid position-relative p-0">
+  <nav class="navbar navbar-expand-lg navbar-dark px-5 py-3 py-lg-0">
+    <a routerLink="/" class="navbar-brand p-0">
+      <h1 class="m-0"><i class="fa fa-user-tie me-2"></i>HRManage</h1>
+    </a>
+    <div class="ms-auto">
+      <a routerLink="/" class="btn btn-outline-light py-2 px-4">Back to home</a>
+    </div>
+  </nav>
+</div>
 
-      <div class="login-header">
-        <div class="avatar">👤</div>
-        <h2>Bienvenue</h2>
-        <p>Connectez-vous à votre compte</p>
+<div class="container-fluid py-5 login-page">
+  <div class="container py-5">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6">
+        <div class="section-title position-relative pb-3 mb-5">
+          <h5 class="fw-bold text-primary text-uppercase">Login</h5>
+          <h1 class="mb-0">Access the HR workspace</h1>
+        </div>
+        <p class="mb-4">Use the account created by the backend to enter the right dashboard. The role in the JWT decides whether you land in the admin dashboard or the employee profile.</p>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <div class="bg-light rounded p-4 h-100">
+              <h5 class="text-primary mb-2">Admin access</h5>
+              <div>Manage employees, contracts, leaves, and accounts.</div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="bg-light rounded p-4 h-100">
+              <h5 class="text-primary mb-2">Employee access</h5>
+              <div>Update your profile and change your password.</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <form class="login-form" (ngSubmit)="onLogin()" #loginForm="ngForm">
+      <div class="col-lg-6">
+        <div class="card shadow-lg border-0 login-panel">
+          <div class="card-body p-4 p-lg-5">
+            <h3 class="mb-2">Welcome back</h3>
+            <p class="text-muted mb-4">Sign in with your username and password.</p>
 
-        <div class="form-group">
-          <label for="username">Username</label>
-          <div class="input-wrapper">
-            <span class="input-icon">👤</span>
-            <input
-              id="username"
-              type="text"
-              name="username"
-              [(ngModel)]="credentials.username"
-              placeholder="votre username"
-              required
-              class="form-input"
-            />
+            <form (ngSubmit)="onLogin()" #loginForm="ngForm" novalidate>
+              <div class="form-group position-relative has-icon-left mb-4">
+                <input
+                  id="username"
+                  type="text"
+                  name="username"
+                  [(ngModel)]="credentials.username"
+                  placeholder="Username"
+                  required
+                  class="form-control form-control-xl"
+                />
+                <div class="form-control-icon">
+                  <i class="bi bi-person"></i>
+                </div>
+              </div>
+
+              <div class="form-group position-relative has-icon-left mb-4">
+                <input
+                  id="password"
+                  [type]="showPassword ? 'text' : 'password'"
+                  name="password"
+                  [(ngModel)]="credentials.password"
+                  placeholder="Password"
+                  required
+                  class="form-control form-control-xl"
+                />
+                <div class="form-control-icon">
+                  <i class="bi bi-shield-lock"></i>
+                </div>
+                <button type="button" class="btn btn-link password-toggle" (click)="showPassword = !showPassword">
+                  <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+              </div>
+
+              <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+              <button type="submit" class="btn btn-primary btn-block btn-lg shadow-lg mt-3" [disabled]="isLoading || loginForm.invalid">
+                <span *ngIf="!isLoading">Login</span>
+                <span *ngIf="isLoading">Connexion en cours...</span>
+              </button>
+
+              <div class="text-center mt-4">
+                <a routerLink="/forgot-password" class="text-muted small">
+                  <i class="bi bi-question-circle me-1"></i>Forgot your password?
+                </a>
+              </div>
+            </form>
           </div>
         </div>
-
-        <div class="form-group">
-          <label for="password">Mot de passe</label>
-          <div class="input-wrapper">
-            <span class="input-icon">🔒</span>
-            <input
-              id="password"
-              [type]="showPassword ? 'text' : 'password'"
-              name="password"
-              [(ngModel)]="credentials.password"
-              placeholder="••••••••"
-              required
-              class="form-input"
-            />
-            <button type="button" class="toggle-password" (click)="showPassword = !showPassword">
-              {{ showPassword ? '🙈' : '👁️' }}
-            </button>
-          </div>
-        </div>
-
-        <div class="error-message" *ngIf="errorMessage">
-          ⚠️ {{ errorMessage }}
-        </div>
-
-        <button type="submit" class="btn-login" [disabled]="isLoading || loginForm.invalid">
-          <span *ngIf="!isLoading">Se connecter →</span>
-          <span *ngIf="isLoading">Connexion en cours...</span>
-        </button>
-
-      </form>
+      </div>
     </div>
   </div>
-
 </div>

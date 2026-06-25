@@ -183,6 +183,12 @@ export class HrApi {
     }, this.options);
   }
 
+  forgotPassword(username: string): Observable<{ message: string; tempPassword: string | null }> {
+    return this.http.post<{ message: string; tempPassword: string | null }>(
+      `${this.base}/auth/forgot-password`, { username }
+    );
+  }
+
   changePassword(payload: ChangePasswordPayload): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.base}/auth/change-password`, payload, this.options);
   }

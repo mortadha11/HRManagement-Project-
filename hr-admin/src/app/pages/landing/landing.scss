@@ -1,0 +1,115 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.top-contact {
+  height: 45px;
+}
+
+.hero {
+  min-height: 760px;
+  position: relative;
+}
+
+.hero-image,
+.hero-overlay {
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.hero-image {
+  object-fit: cover;
+}
+
+.hero-overlay {
+  background: rgba(9, 30, 62, 0.7);
+}
+
+.hero-content {
+  left: 50%;
+  max-width: 980px;
+  padding: 1rem;
+  position: absolute;
+  text-align: center;
+  top: 52%;
+  transform: translate(-50%, -50%);
+  width: min(980px, calc(100% - 2rem));
+  z-index: 2;
+}
+
+.hero-content h1 {
+  font-size: clamp(3.5rem, 7vw, 6.25rem);
+  line-height: 1.05;
+}
+
+.hero-content p {
+  font-size: 1.25rem;
+  line-height: 1.8;
+}
+
+.section-title {
+  max-width: 720px;
+}
+
+.section-title::before {
+  background: #06a3da;
+}
+
+.mission-card,
+.workflow-step,
+.highlight-box {
+  background: #ffffff;
+  border: 1px solid #e6eef8;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(9, 30, 62, 0.08);
+  padding: 2rem;
+}
+
+.mission-number,
+.workflow-step span {
+  align-items: center;
+  background: #06a3da;
+  border-radius: 8px;
+  color: #fff;
+  display: inline-flex;
+  font-weight: 800;
+  height: 48px;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  width: 56px;
+}
+
+.mission-card p,
+.workflow-step p,
+.highlight-box p {
+  color: #6b7280;
+  margin-bottom: 0;
+}
+
+.highlight-box {
+  min-height: 190px;
+}
+
+.highlight-box h2 {
+  color: #091e3e;
+  font-size: 2rem;
+}
+
+footer p,
+footer div {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+@media (max-width: 991.98px) {
+  .navbar {
+    background: #091e3e;
+  }
+
+  .hero {
+    min-height: 680px;
+  }
+}
