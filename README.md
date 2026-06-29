@@ -9,7 +9,9 @@ Full-stack HR management application built with **ASP.NET Core (.NET 10)**, **En
 - Authenticates users with JWT and BCrypt
 - Routes users by role (Admin/Manager → dashboard, Employee → profile)
 - Manages employees, departments, contracts, and leaves from the admin dashboard
+- Full CRUD UI for **Departments** (`/admin/departments`)
 - Lets employees update their profile and change their own password
+- **Sends Welcome Emails** automatically containing usernames and generated passwords via Brevo REST API
 - Lets users **self-recover their password** without needing admin intervention
 - Exposes a documented REST API via Swagger at `/swagger`
 
@@ -126,7 +128,7 @@ The app supports **self-service password recovery** without an email server:
 | Application Interfaces | `Application/Interfaces/` | `ITokenService`, `ICredentialGeneratorService` |
 | Infrastructure Data | `Infrastructure/Data/AppDbContext.cs` | EF Core DbContext, relationship config |
 | Infrastructure Repos | `Infrastructure/Repositories/` | EF implementations of domain interfaces |
-| Infrastructure Services | `Infrastructure/Services/` | JWT token generation, credential generation |
+| Infrastructure Services | `Infrastructure/Services/` | JWT token, credential generation, **EmailService (Brevo)** |
 | Presentation | `Presentation/Controllers/` | Thin HTTP controllers, delegate to services |
 
 ---
@@ -139,6 +141,7 @@ The app supports **self-service password recovery** without an email server:
 | `src/app/pages/auth/forgot-password/` | Self-service password recovery |
 | `src/app/pages/landing/` | Public landing page (Startup2) |
 | `src/app/pages/admin/dashboard/` | Admin/Manager dashboard (Mazer style) |
+| `src/app/pages/admin/departments/`| Full CRUD interface for departments |
 | `src/app/pages/employee/profile/` | Employee profile page (Mazer style) |
 | `src/app/services/auth.service.ts` | Session management (sessionStorage + JWT) |
 | `src/app/services/hr-api.ts` | All API calls (with Bearer auth header) |
@@ -168,7 +171,7 @@ The app supports **self-service password recovery** without an email server:
 ## What is still worth improving
 
 - Split the dashboard into smaller Angular components per section
-- Add email SMTP for a proper "send to inbox" forgot-password flow
+- Implement the email SMTP setup for the "forgot-password" flow (currently it evaluates locally)
 - Add unit tests for: employee creation, password reset, forgot-password, route guards
 - Enforce stricter authorization on Departments/Contracts/Leaves endpoints
 - Remove the `MigrateController` once all passwords are properly BCrypt-hashed
