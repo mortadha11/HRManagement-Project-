@@ -57,12 +57,16 @@ builder.Services.AddAuthorization(options =>
 
 // ── Onion DI registrations ─────────────────────────────────
 // Application interfaces → Infrastructure implementations
-builder.Services.AddScoped<ITokenService,              TokenService>();
-builder.Services.AddScoped<ICredentialGeneratorService, CredentialGeneratorService>();
+builder.Services.AddScoped<ITokenService,               TokenService>();
+builder.Services.AddScoped<ICredentialGeneratorService,  CredentialGeneratorService>();
+builder.Services.AddScoped<IEmailService,                EmailService>();
 
 // Domain interfaces → Infrastructure repositories
 builder.Services.AddScoped<IUserRepository,     UserRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+// ── HTTP client for Brevo ──────────────────────────────────
+builder.Services.AddHttpClient("brevo");
 
 // ── Controllers (scanned from Presentation.Controllers) ────
 builder.Services.AddControllers()

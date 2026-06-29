@@ -19,6 +19,12 @@ export const routes: Routes = [
     canActivate: [adminGuard]
   },
   {
+    path: 'admin/departments',
+    loadComponent: () =>
+      import('./pages/admin/departments/departments').then(m => m.DepartmentsPage),
+    canActivate: [adminGuard]
+  },
+  {
     path: 'employee/profile',
     loadComponent: () =>
       import('./pages/employee/profile/profile').then(m => m.EmployeeProfile),

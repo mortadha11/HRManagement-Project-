@@ -15,11 +15,13 @@ public class AuthController : ControllerBase
 {
     private readonly AppDbContext   _context;
     private readonly ITokenService  _tokenService;
+    private readonly IEmailService  _emailService;
 
-    public AuthController(AppDbContext context, ITokenService tokenService)
+    public AuthController(AppDbContext context, ITokenService tokenService, IEmailService emailService)
     {
         _context      = context;
         _tokenService = tokenService;
+        _emailService = emailService;
     }
 
     // ── Login ─────────────────────────────────────────────
@@ -164,6 +166,24 @@ public class AuthController : ControllerBase
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
+
+        Console.WriteLine($"[DEBUG] AuthController.CreateAccount called for EmployeeId {request.EmployeeId}");
+        var employeeInfo = await _context.Employees.Where(e => e.Id == request.EmployeeId).Select(e => new { e.FirstName, e.LastName, e.Email }).FirstOrDefaultAsync();
+        
+        if (employeeInfo != null && !string.IsNullOrWhiteSpace(employeeInfo.Email))
+        {
+            Console.WriteLine($"[DEBUG] Employee found: {employeeInfo.Email}");
+            _ = _emailService.SendWelcomeEmailAsync(
+                toEmail: employeeInfo.Email,
+                toName: $"{employeeInfo.FirstName} {employeeInfo.LastName}",
+                username: request.Username,
+                temporaryPassword: request.Password
+            );
+        }
+        else 
+        {
+            Console.WriteLine("[DEBUG] Employee not found or missing email!");
+        }
 
         return Ok(new { message = $"Account created: {user.Username} ({user.Role})" });
     }

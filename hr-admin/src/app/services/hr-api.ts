@@ -4,97 +4,97 @@ import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
 export interface Department {
-  id:           number;
-  name:         string;
+  id: number;
+  name: string;
   description?: string | null;
 }
 
 export interface Employee {
-  id:              number;
-  firstName:       string;
-  lastName:        string;
-  fullName?:       string;
-  email:           string;
-  phone?:          string | null;
-  hireDate:        string;
-  salary?:         number | null;
-  isActive:        boolean;
-  createdAt?:      string;
-  jobTitle?:       string | null;
-  jobLevel?:       string | null;
-  departmentId?:   number | null;
+  id: number;
+  firstName: string;
+  lastName: string;
+  fullName?: string;
+  email: string;
+  phone?: string | null;
+  hireDate: string;
+  salary?: number | null;
+  isActive: boolean;
+  createdAt?: string;
+  jobTitle?: string | null;
+  jobLevel?: string | null;
+  departmentId?: number | null;
   departmentName?: string | null;
-  department?:     Department | null;
-  managerId?:      number | null;
-  managerName?:    string | null;
-  role?:           string;
-  username?:       string | null;
+  department?: Department | null;
+  managerId?: number | null;
+  managerName?: string | null;
+  role?: string;
+  username?: string | null;
 }
 
 export interface UserAccount {
-  id:           number;
-  username:     string;
-  role:         string;
-  isActive:     boolean;
-  createdAt:    string;
+  id: number;
+  username: string;
+  role: string;
+  isActive: boolean;
+  createdAt: string;
   lastLoginAt?: string | null;
-  hasPassword:  boolean;
+  hasPassword: boolean;
 }
 
 export interface Contract {
-  id:         number;
+  id: number;
   employeeId: number;
-  type:       string;
-  startDate:  string;
-  endDate?:   string | null;
-  salary?:    number | null;
-  isActive:   boolean;
+  type: string;
+  startDate: string;
+  endDate?: string | null;
+  salary?: number | null;
+  isActive: boolean;
 }
 
 export interface Leave {
-  id:         number;
+  id: number;
   employeeId: number;
-  type:       string;
-  startDate:  string;
-  endDate:    string;
-  status:     string;
-  reason?:    string | null;
-  employee?:  Employee | null;
+  type: string;
+  startDate: string;
+  endDate: string;
+  status: string;
+  reason?: string | null;
+  employee?: Employee | null;
 }
 
 export interface EmployeePayload {
-  id?:           number;
-  firstName:     string;
-  lastName:      string;
-  email:         string;
-  phone?:        string | null;
-  hireDate:      string;
-  salary?:       number | null;
+  id?: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string | null;
+  hireDate: string;
+  salary?: number | null;
   departmentId?: number | null;
-  jobTitle?:     string | null;
-  jobLevel?:     string | null;
-  managerId?:    number | null;
-  role?:         string | null;
-  isActive?:     boolean;
-  createdAt?:    string;
-  password?:     string | null;
+  jobTitle?: string | null;
+  jobLevel?: string | null;
+  managerId?: number | null;
+  role?: string | null;
+  isActive?: boolean;
+  createdAt?: string;
+  password?: string | null;
 }
 
 export interface CreateEmployeeResponse {
-  employeeId:         number;
-  firstName:          string;
-  lastName:           string;
-  email:              string;
-  username:           string;
-  temporaryPassword:  string;
-  role:               string;
+  employeeId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  temporaryPassword: string;
+  role: string;
 }
 
 export interface ResetPasswordResponse {
-  employeeId:         number;
-  username:           string;
-  temporaryPassword:  string;
-  message:            string;
+  employeeId: number;
+  username: string;
+  temporaryPassword: string;
+  message: string;
 }
 
 export interface ProfilePayload {
@@ -113,7 +113,7 @@ export interface ChangePasswordPayload {
 export class HrApi {
   private readonly base = 'http://localhost:5037/api';
 
-  constructor(private http: HttpClient, private auth: AuthService) {}
+  constructor(private http: HttpClient, private auth: AuthService) { }
 
   private get options() {
     return { headers: this.auth.authHeaders };
@@ -153,6 +153,18 @@ export class HrApi {
   // ── Departments ───────────────────────────────────────
   getDepartments(): Observable<Department[]> {
     return this.http.get<Department[]>(`${this.base}/departments`, this.options);
+  }
+
+  createDepartment(payload: Department): Observable<void> {
+    return this.http.post<void>(`${this.base}/departments`, payload, this.options);
+  }
+
+  updateDepartment(id: number, payload: Department): Observable<void> {
+    return this.http.put<void>(`${this.base}/departments/${id}`, payload, this.options);
+  }
+
+  deleteDepartment(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/departments/${id}`, this.options);
   }
 
   // ── Contracts ─────────────────────────────────────────

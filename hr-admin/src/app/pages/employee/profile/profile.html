@@ -21,7 +21,6 @@
           <li class="sidebar-title">Mon Compte</li>
           <li class="sidebar-item active">
             <a class="sidebar-link">
-              <i class="bi bi-person-circle"></i>
               <span>Mon Profil</span>
             </a>
           </li>
@@ -36,8 +35,8 @@
           <h6 class="mb-0 text-truncate">{{ user?.fullName }}</h6>
           <small class="text-muted">{{ user?.role }}</small>
         </div>
-        <button class="btn icon btn-light-danger ms-auto" type="button" title="Deconnexion" (click)="logout()">
-          <i class="bi bi-box-arrow-left"></i>
+        <button class="btn btn-light-danger btn-sm ms-auto" type="button" (click)="logout()">
+          Logout
         </button>
       </div>
     </div>

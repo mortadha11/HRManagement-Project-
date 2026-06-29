@@ -20,41 +20,35 @@
         <ul class="menu">
           <li class="sidebar-title">Overview</li>
           <li class="sidebar-item active">
-            <a class="sidebar-link">
-              <i class="bi bi-grid-fill"></i>
+            <a class="sidebar-link" routerLink="/admin/dashboard">
               <span>Dashboard</span>
             </a>
           </li>
           <li class="sidebar-item">
             <a class="sidebar-link">
-              <i class="bi bi-bar-chart-fill"></i>
               <span>Analytics</span>
             </a>
           </li>
 
           <li class="sidebar-title">HR Management</li>
           <li class="sidebar-item">
-            <a class="sidebar-link">
-              <i class="bi bi-people-fill"></i>
+            <a class="sidebar-link" routerLink="/admin/dashboard">
               <span>Employees</span>
               <span class="badge bg-primary ms-auto">{{ employees().length }}</span>
             </a>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link">
-              <i class="bi bi-building"></i>
+            <a class="sidebar-link" routerLink="/admin/departments">
               <span>Departments</span>
             </a>
           </li>
           <li class="sidebar-item">
             <a class="sidebar-link">
-              <i class="bi bi-file-earmark-text-fill"></i>
               <span>Contracts</span>
             </a>
           </li>
           <li class="sidebar-item">
             <a class="sidebar-link">
-              <i class="bi bi-calendar2-check-fill"></i>
               <span>Leave Requests</span>
               <span class="badge bg-primary ms-auto">{{ pendingLeaves().length }}</span>
             </a>
@@ -64,13 +58,11 @@
             <li class="sidebar-title">System</li>
             <li class="sidebar-item">
               <a class="sidebar-link">
-                <i class="bi bi-shield-lock-fill"></i>
                 <span>Roles & Access</span>
               </a>
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link">
-                <i class="bi bi-journal-text"></i>
                 <span>Audit Logs</span>
               </a>
             </li>
@@ -86,8 +78,8 @@
           <h6 class="mb-0 text-truncate">{{ currentUser?.fullName }}</h6>
           <small class="text-muted">{{ currentUser?.role }}</small>
         </div>
-        <button class="btn icon btn-light-danger ms-auto" type="button" title="Logout" (click)="logout()">
-          <i class="bi bi-box-arrow-left"></i>
+        <button class="btn btn-light-danger btn-sm ms-auto" type="button" (click)="logout()">
+          Logout
         </button>
       </div>
     </div>
@@ -107,11 +99,10 @@
                 (input)="searchTerm.set($any($event.target).value)" />
               <div class="form-control-icon"><i class="bi bi-search"></i></div>
             </div>
-            <button class="btn icon btn-light-primary" type="button" title="Refresh" (click)="loadDashboard()">
-              <i class="bi bi-arrow-clockwise"></i>
+            <button class="btn btn-light-primary" type="button" (click)="loadDashboard()">
+              Refresh
             </button>
             <button class="btn btn-primary" type="button" (click)="startCreate()">
-              <i class="bi bi-plus-lg"></i>
               Add Employee
             </button>
           </div>
@@ -195,8 +186,7 @@
                 <p class="text-muted mb-0">{{ filteredEmployees().length }} found</p>
               </div>
               <button class="btn btn-light-primary" type="button" (click)="startCreate()">
-                <i class="bi bi-person-plus-fill"></i>
-                Add
+                Add Employee
               </button>
             </div>
             <div class="card-body">
@@ -232,13 +222,13 @@
                         </span>
                       </td>
                       <td class="text-end" (click)="$event.stopPropagation()">
-                        <button type="button" class="btn icon btn-light-primary me-1" title="Edit"
+                        <button type="button" class="btn btn-sm btn-light-primary me-1"
                           (click)="startEdit(emp)">
-                          <i class="bi bi-pencil-square"></i>
+                          Edit
                         </button>
-                        <button type="button" class="btn icon btn-light-danger" title="Delete" *ngIf="isAdmin"
+                        <button type="button" class="btn btn-sm btn-light-danger" *ngIf="isAdmin"
                           (click)="deleteEmployee(emp)">
-                          <i class="bi bi-trash"></i>
+                          Delete
                         </button>
                       </td>
                     </tr>
@@ -392,7 +382,7 @@
         [readonly]="passwordMode() === 'suggested'" placeholder="Password" />
       <small class="text-muted" *ngIf="passwordMode() === 'suggested'">Rule: first 2 letters of first name + first 2
         letters of last name + last 3 digits of phone.</small>
-      <small class="text-danger d-block" *ngIf="passwordMode() === 'suggested' && !suggestedPassword()">Enter first
+      <small class="text-danger d-block" *ngIf="passwordMode() === 'suggested' && !suggestedPassword() && employeeForm.dirty">Enter first
         name, last name, and at least 3 phone digits.</small>
       <small class="text-danger d-block" *ngIf="passwordMode() === 'manual' && controlHasError('password')">Password
         must contain at least 6 characters.</small>

@@ -17,11 +17,16 @@ public class EmployeesController : ControllerBase
 
     private readonly AppDbContext                _context;
     private readonly ICredentialGeneratorService _credentials;
+    private readonly IEmailService               _email;
 
-    public EmployeesController(AppDbContext context, ICredentialGeneratorService credentials)
+    public EmployeesController(
+        AppDbContext context,
+        ICredentialGeneratorService credentials,
+        IEmailService email)
     {
         _context     = context;
         _credentials = credentials;
+        _email       = email;
     }
 
     // ── GET all active employees ───────────────────────────
@@ -142,6 +147,12 @@ public class EmployeesController : ControllerBase
 
         await _context.SaveChangesAsync();
         await transaction.CommitAsync();
+
+        await _email.SendWelcomeEmailAsync(
+            toEmail:           employee.Email,
+            toName:            $"{employee.FirstName} {employee.LastName}",
+            username:          username,
+            temporaryPassword: temporaryPassword);
 
         return CreatedAtAction(nameof(GetById), new { id = employee.Id }, new CreateEmployeeResponse
         {
