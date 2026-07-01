@@ -14,7 +14,22 @@ export const authGuard: CanActivateFn = () => {
 export const adminGuard: CanActivateFn = () => {
   const auth   = inject(AuthService);
   const router = inject(Router);
-  if (auth.isLoggedIn && (auth.isAdmin || auth.isManager)) return true;
+  // Only STRICT Admins can view this! Managers are redirected.
+  if (auth.isLoggedIn && auth.isAdmin) return true;
+  if (auth.isLoggedIn && auth.isManager) return router.createUrlTree(['/manager/dashboard']);
+  if (auth.isLoggedIn) {
+    return router.createUrlTree(['/employee/profile']);
+  }
+  return router.createUrlTree(['/login'], {
+    queryParams: { reason: 'sign-in-again' }
+  });
+};
+
+export const managerGuard: CanActivateFn = () => {
+  const auth   = inject(AuthService);
+  const router = inject(Router);
+  if (auth.isLoggedIn && auth.isManager) return true;
+  if (auth.isLoggedIn && auth.isAdmin) return router.createUrlTree(['/admin/dashboard']);
   if (auth.isLoggedIn) {
     return router.createUrlTree(['/employee/profile']);
   }

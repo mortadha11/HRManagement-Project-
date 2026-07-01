@@ -29,6 +29,18 @@
               <span>Analytics</span>
             </a>
           </li>
+          
+          <li class="sidebar-title">My Account</li>
+          <li class="sidebar-item">
+            <a routerLink="/admin/profile" class="sidebar-link">
+              <span>My Profile</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a routerLink="/employee/tasks" class="sidebar-link">
+              <span>My Tasks</span>
+            </a>
+          </li>
 
           <li class="sidebar-title">HR Management</li>
           <li class="sidebar-item">
@@ -43,12 +55,12 @@
             </a>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link">
+            <a class="sidebar-link" routerLink="/admin/contracts">
               <span>Contracts</span>
             </a>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link">
+            <a class="sidebar-link" routerLink="/admin/leaves">
               <span>Leave Requests</span>
               <span class="badge bg-primary ms-auto">{{ pendingLeaves().length }}</span>
             </a>
@@ -251,10 +263,10 @@
             <div class="card-body">
               <div class="recent-message d-flex px-0 py-3" *ngFor="let leave of pendingLeaves().slice(0,4)">
                 <div class="avatar avatar-lg me-3">
-                  <span class="avatar-content">{{ leave.employee ? initials(leave.employee) : 'NA' }}</span>
+                  <span class="avatar-content">{{ leave.employeeName ? leave.employeeName.substring(0, 2).toUpperCase() : 'NA' }}</span>
                 </div>
                 <div>
-                  <h6 class="mb-1">{{ leave.employee?.firstName }} {{ leave.employee?.lastName }}</h6>
+                  <h6 class="mb-1">{{ leave.employeeName }}</h6>
                   <p class="text-muted mb-0">{{ leave.startDate | date:'MMM d' }} - {{ leave.endDate | date:'MMM d' }}
                   </p>
                 </div>

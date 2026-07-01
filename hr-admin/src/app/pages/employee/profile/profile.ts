@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { Employee, HrApi } from '../../../services/hr-api';
 
 @Component({
   selector: 'app-employee-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './profile.html',
   styleUrl: './profile.scss'
 })
@@ -26,7 +26,7 @@ export class EmployeeProfile implements OnInit {
   passwordForm: ReturnType<EmployeeProfile['buildPasswordForm']>;
 
   constructor(
-    private auth: AuthService,
+    public auth: AuthService,
     private api: HrApi,
     private fb: FormBuilder,
     private router: Router

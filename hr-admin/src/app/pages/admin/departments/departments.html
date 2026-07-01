@@ -10,13 +10,14 @@
     <div class="sidebar-wrapper active">
       <div class="sidebar-header">
         <div class="d-flex align-items-center gap-2">
-          <div class="brand-mark">HR</div>
+          <div class="brand-mark bg-primary text-white d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; border-radius: 0.65rem; font-weight: bold;">HR</div>
           <div>
             <h5 class="mb-0">HRManage</h5>
             <small class="text-muted">{{ isAdmin ? 'Admin Panel' : 'Manager Panel' }}</small>
           </div>
         </div>
       </div>
+
       <div class="sidebar-menu">
         <ul class="menu">
           <li class="sidebar-title">Overview</li>
@@ -25,6 +26,24 @@
               <span>Dashboard</span>
             </a>
           </li>
+          <li class="sidebar-item">
+            <a class="sidebar-link">
+              <span>Analytics</span>
+            </a>
+          </li>
+          
+          <li class="sidebar-title">My Account</li>
+          <li class="sidebar-item">
+            <a routerLink="/admin/profile" class="sidebar-link">
+              <span>My Profile</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a routerLink="/employee/tasks" class="sidebar-link">
+              <span>My Tasks</span>
+            </a>
+          </li>
+
           <li class="sidebar-title">HR Management</li>
           <li class="sidebar-item">
             <a class="sidebar-link" routerLink="/admin/dashboard">
@@ -37,22 +56,49 @@
             </a>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link" routerLink="/admin/dashboard">
+            <a class="sidebar-link" routerLink="/admin/contracts">
               <span>Contracts</span>
             </a>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link" routerLink="/admin/dashboard">
+            <a class="sidebar-link" routerLink="/admin/leaves">
               <span>Leave Requests</span>
             </a>
           </li>
+
+          <ng-container *ngIf="isAdmin">
+            <li class="sidebar-title">System</li>
+            <li class="sidebar-item">
+              <a class="sidebar-link">
+                <span>Roles & Access</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link">
+                <span>Audit Logs</span>
+              </a>
+            </li>
+          </ng-container>
         </ul>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="avatar avatar-lg">
+          <span class="avatar-content">{{ currentUser?.fullName?.substring(0,2)?.toUpperCase() }}</span>
+        </div>
+        <div class="min-w-0">
+          <h6 class="mb-0 text-truncate">{{ currentUser?.fullName }}</h6>
+          <small class="text-muted">{{ currentUser?.role }}</small>
+        </div>
+        <button class="btn btn-light-danger btn-sm ms-auto" type="button" (click)="logout()">
+          Logout
+        </button>
       </div>
     </div>
   </div>
 
   <!-- ── Main content ── -->
-  <div id="main">
+  <div id="main" class="layout-navbar">
 
     <!-- Header -->
     <header class="mb-4">

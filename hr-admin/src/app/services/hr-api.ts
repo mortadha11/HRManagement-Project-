@@ -29,6 +29,8 @@ export interface Employee {
   managerName?: string | null;
   role?: string;
   username?: string | null;
+  subordinatesCount?: number;
+  subordinates?: { id: number, fullName: string, jobTitle?: string }[];
 }
 
 export interface UserAccount {
@@ -44,22 +46,31 @@ export interface UserAccount {
 export interface Contract {
   id: number;
   employeeId: number;
+  employeeName?: string;
   type: string;
   startDate: string;
   endDate?: string | null;
   salary?: number | null;
-  isActive: boolean;
+  position?: string | null;
+  workingHours?: number | null;
+  status: string; // Active, Expired, Terminated
+  createdAt?: string;
 }
 
 export interface Leave {
   id: number;
   employeeId: number;
+  employeeName?: string;
   type: string;
   startDate: string;
   endDate: string;
+  daysRequested: number;
   status: string;
   reason?: string | null;
-  employee?: Employee | null;
+  moderatedAt?: string | null;
+  moderatedById?: number | null;
+  moderatorName?: string | null;
+  createdAt?: string;
 }
 
 export interface EmployeePayload {
@@ -107,6 +118,36 @@ export interface ProfilePayload {
 export interface ChangePasswordPayload {
   currentPassword: string;
   newPassword: string;
+}
+
+export interface EmployeeTask {
+  id: number;
+  title: string;
+  description: string | null;
+  status: string;
+  dueDate: string | null;
+  createdAt: string;
+  employeeId: number;
+  managerId: number;
+  assigneeName?: string;
+  managerName?: string;
+  priorityLevel?: string;
+}
+
+export interface CreateTaskRequest {
+  title: string;
+  description?: string | null;
+  dueDate?: string | null;
+  employeeId: number;
+  priorityLevel?: string | null;
+}
+
+export interface UpdateTaskRequest {
+  title?: string;
+  description?: string | null;
+  dueDate?: string | null;
+  status?: string;
+  priorityLevel?: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -171,10 +212,50 @@ export class HrApi {
   getContracts(): Observable<Contract[]> {
     return this.http.get<Contract[]>(`${this.base}/contracts`, this.options);
   }
+  
+  getContract(id: number): Observable<Contract> {
+    return this.http.get<Contract>(`${this.base}/contracts/${id}`, this.options);
+  }
+  
+  getEmployeeContracts(employeeId: number): Observable<Contract[]> {
+    return this.http.get<Contract[]>(`${this.base}/contracts/employee/${employeeId}`, this.options);
+  }
+  
+  getExpiringContracts(days: number = 30): Observable<Contract[]> {
+    return this.http.get<Contract[]>(`${this.base}/contracts/expiring?days=${days}`, this.options);
+  }
+  
+  createContract(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.base}/contracts`, payload, this.options);
+  }
+  
+  updateContract(id: number, payload: any): Observable<void> {
+    return this.http.put<void>(`${this.base}/contracts/${id}`, payload, this.options);
+  }
+  
+  deleteContract(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/contracts/${id}`, this.options);
+  }
 
   // ── Leaves ────────────────────────────────────────────
   getLeaves(): Observable<Leave[]> {
-    return this.http.get<Leave[]>(`${this.base}/leaves`, this.options);
+    return this.http.get<Leave[]>(`${this.base}/leaverequests`, this.options);
+  }
+  
+  getMyLeaves(): Observable<Leave[]> {
+    return this.http.get<Leave[]>(`${this.base}/leaverequests/my`, this.options);
+  }
+  
+  createLeave(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.base}/leaverequests`, payload, this.options);
+  }
+  
+  updateLeaveStatus(id: number, status: string): Observable<void> {
+    return this.http.put<void>(`${this.base}/leaverequests/${id}/status`, { status }, this.options);
+  }
+  
+  deleteLeave(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/leaverequests/${id}`, this.options);
   }
 
   // ── Auth / User accounts ──────────────────────────────
@@ -203,5 +284,31 @@ export class HrApi {
 
   changePassword(payload: ChangePasswordPayload): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${this.base}/auth/change-password`, payload, this.options);
+  }
+
+  // ── Tasks ──────────────────────────────────────────────────
+
+  getAssignedTasks(): Observable<EmployeeTask[]> {
+    return this.http.get<EmployeeTask[]>(`${this.base}/tasks/assigned`, this.options);
+  }
+
+  getCreatedTasks(): Observable<EmployeeTask[]> {
+    return this.http.get<EmployeeTask[]>(`${this.base}/tasks/created`, this.options);
+  }
+
+  createTask(data: CreateTaskRequest): Observable<any> {
+    return this.http.post<any>(`${this.base}/tasks`, data, this.options);
+  }
+
+  updateTask(taskId: number, data: UpdateTaskRequest): Observable<any> {
+    return this.http.put<any>(`${this.base}/tasks/${taskId}`, data, this.options);
+  }
+
+  updateTaskStatus(taskId: number, status: string): Observable<any> {
+    return this.http.put<any>(`${this.base}/tasks/${taskId}/status`, { status }, this.options);
+  }
+
+  deleteTask(taskId: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/tasks/${taskId}`, this.options);
   }
 }

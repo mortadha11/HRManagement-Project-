@@ -89,3 +89,101 @@ public class ResetPasswordRequest
     public int    EmployeeId  { get; set; }
     public string NewPassword { get; set; } = "";
 }
+
+// ── Task requests/responses ────────────────────────────────
+
+public class CreateTaskRequest
+{
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public DateTime? DueDate { get; set; }
+    public string PriorityLevel { get; set; } = "Low";
+    public int EmployeeId { get; set; } // Assignee
+}
+
+public class UpdateTaskRequest
+{
+    public string? Title { get; set; }
+    public string? Description { get; set; }
+    public DateTime? DueDate { get; set; }
+    public string? Status { get; set; }
+    public string? PriorityLevel { get; set; }
+}
+
+public class UpdateTaskStatusRequest
+{
+    public string Status { get; set; } = "Pending";
+}
+
+// ── Contract requests ──────────────────────────────────────
+
+public class CreateContractRequest
+{
+    public int EmployeeId { get; set; }
+    public string Type { get; set; } = string.Empty;
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public decimal? Salary { get; set; }
+    public string? Position { get; set; }
+    public int? WorkingHours { get; set; }
+}
+
+public class UpdateContractRequest
+{
+    public string Type { get; set; } = string.Empty;
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public decimal? Salary { get; set; }
+    public string? Position { get; set; }
+    public int? WorkingHours { get; set; }
+    public string Status { get; set; } = "Active";
+}
+
+// ── Leave requests ─────────────────────────────────────────
+
+public class CreateLeaveRequest
+{
+    public string Type { get; set; } = string.Empty;
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public string? Reason { get; set; }
+}
+
+public class UpdateLeaveStatusRequest
+{
+    public string Status { get; set; } = "Approved"; // Approved or Rejected
+}
+
+// ── Outgoing DTOs ──────────────────────────────────────────
+
+public class ContractDto
+{
+    public int Id { get; set; }
+    public int EmployeeId { get; set; }
+    public string EmployeeName { get; set; } = "";
+    public string Type { get; set; } = string.Empty;
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public decimal? Salary { get; set; }
+    public string? Position { get; set; }
+    public int? WorkingHours { get; set; }
+    public string Status { get; set; } = "";
+    public DateTime CreatedAt { get; set; }
+}
+
+public class LeaveDto
+{
+    public int Id { get; set; }
+    public int EmployeeId { get; set; }
+    public string EmployeeName { get; set; } = "";
+    public string Type { get; set; } = "";
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public int DaysRequested { get; set; }
+    public string Status { get; set; } = "";
+    public string? Reason { get; set; }
+    public DateTime? ModeratedAt { get; set; }
+    public int? ModeratedById { get; set; }
+    public string? ModeratorName { get; set; }
+    public DateTime CreatedAt { get; set; }
+}

@@ -61,6 +61,9 @@ builder.Services.AddScoped<ITokenService,               TokenService>();
 builder.Services.AddScoped<ICredentialGeneratorService,  CredentialGeneratorService>();
 builder.Services.AddScoped<IEmailService,                EmailService>();
 
+builder.Services.AddScoped<IContractService, ContractService>();
+builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+
 // Domain interfaces → Infrastructure repositories
 builder.Services.AddScoped<IUserRepository,     UserRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();

@@ -1,0 +1,120 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f2f7ff;
+  font-family: Nunito, Arial, sans-serif;
+}
+
+.brand-mark,
+.avatar-content {
+  align-items: center;
+  background: #435ebe;
+  border-radius: 50%;
+  color: #fff;
+  display: inline-flex;
+  font-weight: 800;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
+.brand-mark {
+  border-radius: 0.65rem;
+  height: 42px;
+  width: 42px;
+}
+
+.sidebar-user {
+  align-items: center;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 0.75rem;
+  margin: 1rem 2rem 2rem;
+  padding-top: 1rem;
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+.profile-card .avatar-xl {
+  height: 86px;
+  width: 86px;
+}
+
+.profile-info,
+.readonly-box {
+  border: 1px solid #edf2f7;
+  border-radius: 0.7rem;
+  overflow: hidden;
+}
+
+.profile-info > div {
+  align-items: center;
+  border-bottom: 1px solid #edf2f7;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+}
+
+.profile-info > div:last-child {
+  border-bottom: 0;
+}
+
+.profile-info span:first-child,
+.readonly-box span {
+  color: #7c8db5;
+  font-weight: 700;
+}
+
+.readonly-box {
+  background: #f8fbff;
+  padding: 1rem;
+}
+
+.readonly-box .col-md-6 {
+  display: grid;
+  gap: 0.35rem;
+}
+
+@media (max-width: 1199px) {
+  #sidebar .sidebar-wrapper {
+    height: auto;
+    left: 0;
+    position: static;
+    width: 100%;
+  }
+
+  #main {
+    margin-left: 0;
+  }
+}
+
+/* ── Sidebar & Task UI fixes ── */
+.sidebar-item .sidebar-link {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  color: #25396f;
+  transition: all 0.3s;
+}
+.sidebar-item.active .sidebar-link {
+  background-color: #435ebe;
+  color: white;
+}
+.sidebar-item .sidebar-link i {
+  font-size: 1.25rem;
+}
+
+.task-card { 
+  border-left: 4px solid #435ebe; 
+  border-radius: 0.75rem;
+  transition: box-shadow 0.3s;
+}
+.task-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.task-completed { border-left: 4px solid #198754; opacity: 0.8; }
+.modal-backdrop-soft { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1040; }

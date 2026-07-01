@@ -29,6 +29,8 @@ export class DepartmentsPage implements OnInit {
   deleteConfirmId: number | null = null;
 
   get isAdmin(): boolean { return this.auth.isAdmin; }
+  get currentUser() { return this.auth.currentUser; }
+  logout() { this.auth.logout(); }
 
   constructor(
     private api:  HrApi,

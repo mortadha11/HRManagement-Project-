@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<Contract>   Contracts   => Set<Contract>();
     public DbSet<Leave>      Leaves      => Set<Leave>();
     public DbSet<User>       Users       => Set<User>();
+    public DbSet<EmployeeTask> Tasks     => Set<EmployeeTask>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -50,6 +51,20 @@ public class AppDbContext : DbContext
             .WithOne(e => e.User)
             .HasForeignKey<User>(u => u.EmployeeId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // ── EmployeeTask → Assignee ───────────────────────
+        modelBuilder.Entity<EmployeeTask>()
+            .HasOne(t => t.Assignee)
+            .WithMany()
+            .HasForeignKey(t => t.EmployeeId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // ── EmployeeTask → Manager ────────────────────────
+        modelBuilder.Entity<EmployeeTask>()
+            .HasOne(t => t.Manager)
+            .WithMany()
+            .HasForeignKey(t => t.ManagerId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // ── Unique indexes ────────────────────────────────
         modelBuilder.Entity<Employee>().HasIndex(e => e.Email).IsUnique();

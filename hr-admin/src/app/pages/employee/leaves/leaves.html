@@ -1,0 +1,204 @@
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/mazer/assets/css/bootstrap.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="/mazer/assets/css/app.css">
+
+<style>
+.modal-backdrop-soft { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1040; }
+/* ── Sidebar UI fixes ── */
+.sidebar-item .sidebar-link {
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  color: #25396f;
+  transition: all 0.3s;
+}
+.sidebar-item.active .sidebar-link {
+  background-color: #435ebe;
+  color: white;
+}
+</style>
+
+<div id="app" class="mazer-page">
+  <div id="sidebar" class="active">
+    <div class="sidebar-wrapper active">
+      <div class="sidebar-header">
+        <div class="d-flex align-items-center gap-2">
+          <div class="brand-mark">HR</div>
+          <div>
+            <h5 class="mb-0">HRManage</h5>
+            <small class="text-muted">Mon Espace</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-menu">
+        <ul class="menu">
+          <li class="sidebar-title">Mon Compte</li>
+          <li class="sidebar-item">
+            <a routerLink="/employee/profile" class="sidebar-link">
+              <i class="bi bi-person-fill pt-1 text-muted"></i>
+              <span>Mon Profil</span>
+            </a>
+          </li>
+          <li class="sidebar-item">
+            <a routerLink="/employee/tasks" class="sidebar-link">
+              <i class="bi bi-list-task pt-1 text-muted"></i>
+              <span>Mes Tasks</span>
+            </a>
+          </li>
+          <li class="sidebar-item active">
+            <a routerLink="/employee/leaves" class="sidebar-link">
+              <i class="bi bi-calendar-check pt-1 text-primary"></i>
+              <span>Mes Leaves</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sidebar-user">
+        <div class="avatar avatar-lg">
+          <span class="avatar-content">{{ user?.fullName?.substring(0,2)?.toUpperCase() }}</span>
+        </div>
+        <div class="min-w-0">
+          <h6 class="mb-0 text-truncate">{{ user?.fullName }}</h6>
+          <small class="text-muted">{{ user?.role }}</small>
+        </div>
+        <button class="btn btn-light-danger btn-sm ms-auto" type="button" (click)="logout()">
+          Logout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="main" class="layout-navbar">
+    <header class="mb-3">
+      <nav class="navbar navbar-expand navbar-light">
+        <div class="container-fluid">
+          <div>
+            <h3 class="mb-0">My Leave Requests</h3>
+            <p class="text-muted mb-0">Manage your time off</p>
+          </div>
+          <div class="ms-auto d-flex gap-2">
+            <a *ngIf="auth.isAdmin || auth.isManager" routerLink="/admin/dashboard" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left"></i> Dashboard
+            </a>
+            <button class="btn btn-primary" (click)="openCreateModal()">
+              <i class="bi bi-plus-lg me-1"></i> Request Leave
+            </button>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div id="main-content">
+      <div class="text-center my-5" *ngIf="isLoading()">
+        <div class="spinner-border text-primary" role="status"></div>
+      </div>
+
+      <ng-container *ngIf="!isLoading()">
+        
+        <div class="card shadow-sm border-0 text-center py-5" *ngIf="leaves().length === 0">
+          <div class="card-body">
+            <i class="bi bi-calendar2-minus text-muted" style="font-size: 3rem;"></i>
+            <h5 class="mt-3 fw-semibold text-muted">No leave requests</h5>
+            <p class="text-muted small mb-0">You have not submitted any leave requests yet.</p>
+          </div>
+        </div>
+
+        <div class="table-responsive" *ngIf="leaves().length > 0">
+          <table class="table table-hover align-middle bg-white shadow-sm rounded-3 overflow-hidden">
+            <thead class="table-light">
+              <tr>
+                <th>Type</th>
+                <th>Requested Dates</th>
+                <th>Duration</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let l of leaves()">
+                <td><span class="badge bg-light-primary text-primary">{{ l.type }}</span></td>
+                <td>
+                  {{ l.startDate | date:'mediumDate' }}  <i class="bi bi-arrow-right mx-1 text-muted"></i>  {{ l.endDate | date:'mediumDate' }}
+                </td>
+                <td><strong>{{ l.daysRequested }}</strong> d</td>
+                <td class="text-muted small text-truncate" style="max-width: 200px;">{{ l.reason || '-' }}</td>
+                <td>
+                  <span class="badge" 
+                        [ngClass]="{
+                          'bg-warning text-dark': l.status === 'Pending', 
+                          'bg-success': l.status === 'Approved', 
+                          'bg-danger': l.status === 'Rejected'}">
+                    <i class="bi me-1" 
+                       [ngClass]="{'bi-hourglass-split': l.status === 'Pending', 'bi-check-circle-fill': l.status === 'Approved', 'bi-x-circle-fill': l.status === 'Rejected'}"></i> 
+                    {{ l.status }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <button *ngIf="l.status === 'Pending'" class="btn btn-sm btn-outline-danger" (click)="deleteLeave(l.id)" title="Cancel Request">
+                    Cancel
+                  </button>
+                  <span *ngIf="l.status !== 'Pending'" class="text-muted small">Locked</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<!-- DEFAULT CREATE MODAL -->
+<div class="modal fade" [class.show]="showModal()" [style.display]="showModal() ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold">Request Time Off</h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="form" (ngSubmit)="submitLeave()">
+          <div class="mb-3">
+            <label class="form-label">Leave Type</label>
+            <select class="form-select" formControlName="type">
+              <option value="Vacation">Vacation / Paid Time Off</option>
+              <option value="Sick Leave">Sick Leave</option>
+              <option value="Unpaid">Unpaid Leave</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Start Date</label>
+              <input type="date" class="form-control" formControlName="startDate">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">End Date</label>
+              <input type="date" class="form-control" formControlName="endDate">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Reason or Comment (Optional)</label>
+            <textarea class="form-control" formControlName="reason" rows="3" placeholder="Provide extra helpful context or an exact reason for sickness..."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-top-0 pt-0">
+        <button type="button" class="btn btn-light" (click)="closeModal()">Discard</button>
+        <button type="button" class="btn btn-primary" [disabled]="isSaving() || form.invalid" (click)="submitLeave()">
+          <span *ngIf="isSaving()" class="spinner-border spinner-border-sm me-2"></span>
+          {{ isSaving() ? 'Submitting...' : 'Submit Request' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop-soft" *ngIf="showModal()" (click)="closeModal()"></div>

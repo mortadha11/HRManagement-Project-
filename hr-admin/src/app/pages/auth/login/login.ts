@@ -57,8 +57,10 @@ export class LoginComponent implements OnInit {
   }
 
   private goToHome(role = this.auth.currentUser?.role): void {
-    if (role === 'Admin' || role === 'Manager') {
+    if (role === 'Admin') {
       this.router.navigate(['/admin/dashboard'], { replaceUrl: true });
+    } else if (role === 'Manager') {
+      this.router.navigate(['/manager/dashboard'], { replaceUrl: true });
     } else {
       this.router.navigate(['/employee/profile'], { replaceUrl: true });
     }

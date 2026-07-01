@@ -1,54 +1,103 @@
+using HRManagement.API.Application.DTOs;
+using HRManagement.API.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using HRManagement.API.Domain.Entities;
-using HRManagement.API.Infrastructure.Data;
 
 namespace HRManagement.API.Presentation.Controllers;
 
 [ApiController]
-[Route("api/contracts")]
+[Route("api/[controller]")]
+[Authorize]
 public class ContractsController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    public ContractsController(AppDbContext context) => _context = context;
+    private readonly IContractService _contractService;
+
+    public ContractsController(IContractService contractService)
+    {
+        _contractService = contractService;
+    }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll() =>
-        Ok(await _context.Contracts.Include(c => c.Employee).ToListAsync());
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> GetAll()
+    {
+        var contracts = await _contractService.GetAllAsync();
+        return Ok(contracts);
+    }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> GetById(int id)
     {
-        var contract = await _context.Contracts
-            .Include(c => c.Employee)
-            .FirstOrDefaultAsync(c => c.Id == id);
-        return contract == null ? NotFound() : Ok(contract);
+        var contract = await _contractService.GetByIdAsync(id);
+        if (contract == null) return NotFound(new { message = "Contract not found" });
+        return Ok(contract);
+    }
+
+    [HttpGet("employee/{employeeId:int}")]
+    public async Task<IActionResult> GetByEmployee(int employeeId)
+    {
+        // Add basic authorization: only Admin/Manager or the Employee themselves
+        var claim = User.FindFirst("employeeId")?.Value;
+        int.TryParse(claim, out var currentEmpId);
+        
+        var canAccess = User.IsInRole("Admin") || User.IsInRole("Manager") || currentEmpId == employeeId;
+        if (!canAccess) return Forbid();
+
+        var contracts = await _contractService.GetByEmployeeIdAsync(employeeId);
+        return Ok(contracts);
+    }
+
+    [HttpGet("expiring")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> GetExpiring([FromQuery] int days = 30)
+    {
+        var contracts = await _contractService.GetExpiringSoonAsync(days);
+        return Ok(contracts);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Contract contract)
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> Create([FromBody] CreateContractRequest request)
     {
-        _context.Contracts.Add(contract);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetById), new { id = contract.Id }, contract);
+        try
+        {
+            var result = await _contractService.CreateAsync(request);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, new { message = "Contract created successfully" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, Contract contract)
+    [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateContractRequest request)
     {
-        if (id != contract.Id) return BadRequest();
-        _context.Entry(contract).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-        return NoContent();
+        try
+        {
+            await _contractService.UpdateAsync(id, request);
+            return Ok(new { message = "Contract updated successfully" });
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { message = "Contract not found" });
+        }
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Delete(int id)
     {
-        var contract = await _context.Contracts.FindAsync(id);
-        if (contract == null) return NotFound();
-        _context.Contracts.Remove(contract);
-        await _context.SaveChangesAsync();
-        return NoContent();
+        try
+        {
+            await _contractService.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound(new { message = "Contract not found" });
+        }
     }
 }

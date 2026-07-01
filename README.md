@@ -1,4 +1,18 @@
-# HRManagement API
+# HRManagement Platform
+
+![C#](https://img.shields.io/badge/C%23-10.0-239120?style=for-the-badge&logo=c-sharp&logoColor=white)
+![Angular](https://img.shields.io/badge/Angular-18+-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-Web_API-5C2D91?style=for-the-badge&logo=dotnet&logoColor=white)
+![EF Core](https://img.shields.io/badge/EF_Core-ORM-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+![SQL Server](https://img.shields.io/badge/SQL_Server-Database-CC2927?style=for-the-badge&logo=microsoft-sql-server&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
+![License](https://img.shields.io/badge/LICENSE-PROPRIETARY-FF5722?style=for-the-badge)
+
+<br/>
+
+![HRManagement Landing Page](./docs/landing-page.png)
+
+<br/>
 
 Full-stack HR management application built with **ASP.NET Core (.NET 10)**, **Entity Framework Core**, **SQL Server**, and **Angular 18**.
 
