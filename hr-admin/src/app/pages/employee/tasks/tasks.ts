@@ -19,7 +19,7 @@ export class TasksComponent implements OnInit {
 
   isLoading = signal(true);
   error = signal('');
-  
+
   showCreateModal = signal(false);
   isSaving = signal(false);
   taskForm: ReturnType<TasksComponent['buildForm']>;
@@ -100,7 +100,7 @@ export class TasksComponent implements OnInit {
   }
 
   deleteTask(taskId: number) {
-    if(!confirm('Are you sure you want to delete this task?')) return;
+    if (!confirm('Are you sure you want to delete this task?')) return;
     this.api.deleteTask(taskId).subscribe({
       next: () => this.loadData(),
       error: () => alert('Failed to delete task')
